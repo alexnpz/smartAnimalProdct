@@ -65,7 +65,7 @@ var app = (function() {
             if (snapshot.exists()){
                 const data = snapshot.val();
                 const keys = Object.keys(data);
-                console.log(data);
+                //console.log(data);
                 keys.forEach((key) => {
                     const select = document.getElementById("routing");
                     const option = document.createElement("option");
@@ -85,7 +85,17 @@ var app = (function() {
     select.addEventListener("change",() =>{
     // Populate the 3 sections:
     // Area (show property and values of sensors ONLY) 
-
+        let optionSelected = select.options[select.selectedIndex].text;
+        let getTable = "/ESP"+ optionSelected;
+        const path = ref(db,getTable);
+        onValue(path,(snapshot) =>{
+            if(snapshot.exists()){
+                const data = snapshot.val();
+                const keys = Object.keys(data);
+                console.log(keys);
+            }
+        });
+        
     // Alert(check values if above/below normal values, i.e, between sensorValues and sensorAlertValues,also show actuators ON and OFF)  
 
     // Rules( create form with new set of alert values, then "update" values in topic of Firebase)

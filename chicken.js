@@ -1,4 +1,4 @@
-import { getDatabase, ref,set, onValue } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
+import { getDatabase, ref,set, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 var app = (function() {
     const db = getDatabase();
@@ -61,7 +61,7 @@ var app = (function() {
 
     // Create js-array and if necessary, create possibility to add using web (later)
     // String array with path for every system associated with areas
-    const elemsSystems = ['/ESPChicken/sensors/','/ESPChicken/actuators/','/ESPSheep/sensors/','/ESPSheep/actuators/'];
+    const elemsSystems = ['/ESPChicken/sensors/','/ESPChicken/actuators/'];
    // const dir = ref (db, systSelected);
     function getFbValues(systSelected){
         const path = ref(db,systSelected);
@@ -104,10 +104,8 @@ var app = (function() {
         );
     }
     
-   // getFbValues(elemsSystems[0]);
-   // getFbValues(elemsSystems[1]);
-    getFbValues(elemsSystems[2]);
-    getFbValues(elemsSystems[3]);
+   getFbValues(elemsSystems[0]);
+   getFbValues(elemsSystems[1]);
         
     
     //Control Panel add&remove visualization with use of add/remove to Firebase
@@ -118,17 +116,8 @@ var app = (function() {
         
     }
 
-    //sendFbValues(spaSendFb,'/spaFirebase');
-    //sendFbValues(controlBools,'/Control');
+    //sendFbValues(spaSendFb,'/spaFirebase'); -> rulesControl adapt
     
-    function Control(controlPath){
-        const $btn = $("#" + controlPath);
-        onValue(ref(db,controlPath), (snapshot) => {
-            if (snapshot.exists()){
-            const data = snapshot.val();    
-            }
-        });
-    }
     function rulesControl(id,pathFile){
         let formRules = document.getElementById(id);
         let formData = {};
@@ -153,88 +142,6 @@ var app = (function() {
         
     }
 
-    
-    //document.getElementById("btnSaveRulesChicken").addEventListener("click", () => rulesControl("chickencoopform","/rulesChicken"));
-    document.getElementById("btnSaveRulesSheep").addEventListener("click", () => rulesControl("sheepfoldform","/rulesSheeps"));
-    
-    //   document.getElementById("btnSaveRulesSheep").addEventListener("click", function () {
-        
-    //     //rulesControl('sheepfoldform','/rulesSheeps');
-    //     alert("Teste2");
-    //   });
-    
-    // document.getElementById("btnSaveRules").addEventListener("click", function () {
-    //     rulesControl('sheepfoldform','/rulesSheeps');
-    //     alert("Teste");
-    //   });
-    // function rulesControl(formRulesid,dbDir){
-    //     const formRules = document.getElementById(formRulesid);
-    //     for (let i = 0; i < formRules.elements.length; i++) {
-    //         let input = formRules.elements[i];
-    //         let value = input.value;
-    //         console.log(value);
-    //         //rulesFB[input]=value;
-    //     }
-        
-    //     // var rtemperaturemin = document.getElementById("rtemperaturemin").value;
-    //     // var rtemperaturemax = document.getElementById("rtemperaturemax").value;
-    //     // alert(rtemperaturemin);
-    //     // alert(rtemperaturemax);
-        
-        
-    // //     const queryString = $(formRulesid).serialize();
-    // //     alert(queryString.rtemperaturemin);
-    // //     console.log(queryString)
-    // //    alert("Test");
-
-    //     const path = ref(db,dbDir);
-    //     const postFirebase = set(path, formData);
-        
-    //     // const formRules = document.getElementById(formRulesid);
-    //     // const rulesFB = {};
-    //     // formRules.addEventListener('submit', () => {
-    //     //     for (let i = 0; i < formRules.elements.length; i++) {
-    //     //         let input = formRules.elements[i];
-    //     //         let value = input.value;
-    //     //         rulesFB[input]=value;
-    //     //     }
-    //     // });
-
-        
-    //     }
-        
-        // document.body.addEventListener("click", e => {});
-        // const path = ref(db,dbDir);
-        // const postFirebase = set(path, rulesFB);
-    
-   
-
-    // function cnfBtn(idBtn,icon,idTimeStamp){
-    //     const $btn = $("#" + idBtn);
-    //     const $icon = $("#" + icon);
-    //     let stateBtn = false;
-    //     onValue(ref(db,idBtn), (snapshot) => {
-    //         if (snapshot.exists()){
-    //         const data = snapshot.val();
-    //         const timestamp = data.timestamp;
-    //         timestamps[idTimeStamp] = timestamp;
-    //         const newStateBtn = data.state;
-    //         if (newStateBtn != stateBtn){
-    //             stateBtn = newStateBtn;
-    //             $btn.toggleClass('fa-toggle-on fa-toggle-off text-danger');
-    //             $icon.toggleClass('fas far text-warning');
-    //             }
-    //         }
-    //       });
-    //     $btn.click(() => {
-    //         set(ref(db,idBtn),{
-    //             state: !stateBtn,
-    //             timestamp: Date.now()
-    //         });
-    //     })  
-    // }
-    //
-    // Additional info show statistics obtained by sensors
-    function statistics(dataObj){}
+    document.getElementById("btnSaveRulesChicken").addEventListener("click", () => rulesControl("chickencoopform","/rulesChicken"));    
    
 })();
