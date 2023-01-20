@@ -4,7 +4,7 @@ var app = (function() {
     const db = getDatabase();
     const spaSendFb = {
         'lux': [0,1],
-        'door_servo': [0,1],
+        'door_servo': 1,
         'buzzer': [0,1],
         'move_left_sec': [0,1],
         'move_right_sec': [0,1],
@@ -16,7 +16,7 @@ var app = (function() {
         'temp_sensor': [0,1],
         'water_quality_sensor':[0,1],
         'minerals_servo': [0,1],
-        'door_servo_third': [0,1],
+        'door_servo_third': 1,
         'fan': [0,1]                
     };
 

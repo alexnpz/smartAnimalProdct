@@ -93,10 +93,10 @@ var app = (function() {
                         
                 console.log(keysSensors);
                 console.log(keysAlerts);
-                console.log(keysActuators);
+                
 
                 // Append Alerts if happened
-                
+            
 
                 // Create object with {actuatorName, actuatorState} structure-format
                 let actObj = {};
@@ -154,7 +154,7 @@ var app = (function() {
         }
         else{
         let optionSelected = select.options[select.selectedIndex].text;
-        //visualizeArea(optionSelected,areaId);
+        visualizeArea(optionSelected,areaId);
         visualizeAlerts(optionSelected,alertsId);
         }
     // Alert(check values if above/below normal values, i.e, between sensorValues and sensorAlertValues,also show actuators ON and OFF)  

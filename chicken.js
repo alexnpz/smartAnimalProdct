@@ -4,7 +4,7 @@ var app = (function() {
     const db = getDatabase();
     const spaSendFb = {
         'lux': [0,1],
-        'door_servo': [0,1],
+        'door_servo': 1,
         'buzzer': [0,1],
         'move_left_sec': [0,1],
         'move_right_sec': [0,1],
@@ -16,12 +16,11 @@ var app = (function() {
         'temp_sensor': [0,1],
         'water_quality_sensor':[0,1],
         'minerals_servo': [0,1],
-        'door_servo_third': [0,1],
+        'door_servo_third': 1,
         'fan': [0,1]                
     };
-    
     const controlOptions = {
-        'servmDoorDNight' : 'Front Door',
+        'servoDoorNight' : 'Front Door',
         'minerals' : 'Minerals Motor',
         'fan' : 'Fan',
         'temperature': 'Temperature',
@@ -36,7 +35,18 @@ var app = (function() {
     // String array with path for every system associated with areas
     const elemsSystems = ['/ESPChicken/sensors/','/ESPChicken/actuators/'];
    // const dir = ref (db, systSelected);
-    function getFbValues(systSelected){
+   // TODO: Door Opening in the morning -> SetInterval min + API request + sendToFirebase
+
+   // TODO: Door Closing in the afternoon -> SetInterval 5 min + API request +sendToFirebase
+
+   async function doorControl (){
+    let doorControl = document.getElementById("servoDoorNight");
+    // let response = await fetch('https://www.boredapi.com/api/activity?type=' + idActivity[selectionValue]);
+    // let data = await response.json();
+
+   }
+
+   function getFbValues(systSelected){
         const path = ref(db,systSelected);
         onValue(path,(snapshot)=>{
             if (snapshot.exists()){
@@ -106,7 +116,8 @@ var app = (function() {
             console.log(input.value);
             console.log(formData);
             //alert(formData);
-            }
+        }
+        
         //rulesControl('sheepfoldform','/rulesSheeps');
         //console.log(formData);
         
@@ -117,4 +128,6 @@ var app = (function() {
 
     document.getElementById("btnSaveRulesChicken").addEventListener("click", () => rulesControl("chickencoopform","/rulesChicken"));    
    
+
+    
 })();
