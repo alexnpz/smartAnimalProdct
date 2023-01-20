@@ -19,22 +19,7 @@ var app = (function() {
         'door_servo_third': [0,1],
         'fan': [0,1]                
     };
-    // state Associated with Rules
-    const stateAssociatedSheepFold = {
-        'servomotorDoorDayNight' : ['OPEN','OPENING','CLOSING','CLOSED'],
-        'minerals' : ['ON','STOP'],
-        'fan' : ['ON','STOP'],
-        'temperature': ['YES','NO'],
-        'humidity': ['YES','NO'],
-        'waterQ': ['GOOD','DANGER'],
     
-    };
-    const stateAssociatedChickenCoop = {
-        'motorFood' : ['ON','OFF'],
-        'lux' : ['LOW','MEDIUM','HIGH'],
-        'buzzer' : ['ON','STOP'],    
-    };
-
     const controlOptions = {
         'servmDoorDNight' : 'Front Door',
         'minerals' : 'Minerals Motor',
@@ -45,18 +30,6 @@ var app = (function() {
         'motorFood' : 'Food Motor',
         'lux' : 'Light',
         'buzzer' : 'Buzzer', 
-    };
-
-    const controlBools = {
-        'servmDoorDNight' : true,
-        'minerals' : false,
-        'fan' : false,
-        'temperature': true,
-        'humidity': true,
-        'waterQ': true,
-        'motorFood' : true,
-        'lux' : false,
-        'buzzer' : false, 
     };
 
     // Create js-array and if necessary, create possibility to add using web (later)

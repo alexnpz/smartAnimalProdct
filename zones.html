@@ -69,8 +69,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title text-center">Alerts</h5>
-                            <div class="d-flex mt-1" id="alertsId"></div> 
-                            <!--Actuators-->
+                            <div id="alertsId"></div>
                         </div>
                     </div>
                 </div>
@@ -79,7 +78,8 @@
                         <div class="card-body">
                             <h5 class="card-title text-center">Rules</h5>
                             <div class="d-flex mt-1" id="rulesId"></div> 
-                            <!--Add Rules-->                 
+                            <form id="zoneEdition" onsubmit="valForm()">
+                            </form>               
                         </div>
                     </div>
                 </div>
@@ -87,7 +87,6 @@
         </div>
     </section>
     
-    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
     <script type="module" src="firebase.js"></script>
     <script type="module" src="zoneVs.js"></script>
     

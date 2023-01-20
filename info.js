@@ -3,12 +3,11 @@ import { getDatabase, ref,set } from "https://www.gstatic.com/firebasejs/9.15.0/
 // Using jQuery to get IP, Geolocation and then request OpenWeatherMap and get some useful data
 $().ready(function () {
   function weatherToday () {
-    
-    $.getJSON("https://ipinfo.io/geo",function(rsp){
-      let region = rsp.city;
-      $('#apilocation').text(region);});
-    
-    $.getJSON('https://api.openweathermap.org/data/2.5/weather?units=metric&q='+ "leiria" +'&appid=d1970f87022cd49037d9f60841422697',
+    //$.getJSON("")
+    $.getJSON("https://api.ipgeolocation.io/ipgeo?apiKey=554653b913b04d24b5a7e80804f95a82",function(rsp){
+      let country_name = rsp.country_name;
+      $('#apilocation').text(country_name);
+    $.getJSON('https://api.openweathermap.org/data/2.5/weather?units=metric&q='+ country_name +'&appid=d1970f87022cd49037d9f60841422697',
       function(response) {
         $('#apitemperature').text(response.main.temp + ' ºC');
         $('#apihumidity').text(response.main.humidity + ' %');
@@ -20,6 +19,7 @@ $().ready(function () {
         let $localDateSunset = `${$sunsetUTC.getHours()}:${$sunsetUTC.getMinutes()}:${$sunsetUTC.getSeconds()} PM`;
         $('#apisunset').text($localDateSunset);                  
       });
+    });
     
   }   
   weatherToday();

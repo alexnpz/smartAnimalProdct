@@ -128,7 +128,7 @@ var app = (function() {
                     alertArray.push(newMinValue.id);
                     newMinValue.type = "number";
                     newMinValue.className ="numbVal";
-                    newMinValue.name = "sensorMinValue";
+                    newMinValue.name = "alertMinValue";
     
                     const newLabMaxValue = document.createElement("label");
                     newLabMaxValue.innerHTML = "Max Value" + ":";
@@ -138,7 +138,7 @@ var app = (function() {
                     alertArray.push(newMaxValue.id);
                     newMaxValue.type = "number";
                     newMaxValue.className ="numbVal";
-                    newMaxValue.name = "sensorMaxValue";
+                    newMaxValue.name = "alertMaxValue";
 
                     divOptions.appendChild(newLabMinValue);
                     divOptions.appendChild(newMinValue);
