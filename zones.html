@@ -26,10 +26,10 @@
                     <a class="nav-link" aria-current="page" href="sheepfold.html">SheepFold</a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link active" href="chickencoop.html">Chicken Coop</a>
+                    <a class="nav-link" href="chickencoop.html">Chicken Coop</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="zones.html">Zones</a>
+                        <a class="nav-link active" href="zones.html">Zones</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="form.html">Create Zone</a>
@@ -50,7 +50,7 @@
                     <div class="card container-sm">
                         <div class="card-body">
                             <select class="form-select form-select-sm" name="routing" id="routing" aria-label="Default select example">
-                                <option class="text-center" selected>Pick an area</option>
+                                <option class="text-center" selected value="default">Pick an area</option>
                             </select>
                         </div>
                     </div>
@@ -60,7 +60,8 @@
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title text-center">Area</h5>  
+                            <h5 class="card-title text-center">Area</h5> 
+                            <div id="areaId"></div> 
                         </div>
                     </div>
                 </div>
@@ -68,6 +69,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title text-center">Alerts</h5>
+                            <div class="d-flex mt-1" id="alertsId"></div> 
                             <!--Actuators-->
                         </div>
                     </div>
@@ -76,6 +78,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title text-center">Rules</h5>
+                            <div class="d-flex mt-1" id="rulesId"></div> 
                             <!--Add Rules-->                 
                         </div>
                     </div>

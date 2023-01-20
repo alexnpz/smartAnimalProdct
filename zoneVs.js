@@ -1,4 +1,4 @@
-import { getDatabase, ref,set, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { getDatabase, ref,set, onValue, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 var app = (function() {
     const db = getDatabase();
@@ -80,22 +80,101 @@ var app = (function() {
         );
     }
     routes();
+    
+    let arrayZones = ["/sensors","/alerts","/actuators"];
+    let areaId = document.getElementById("areaId");
+    let alertsId = document.getElementById("alertsId");
+    let rulesId = document.getElementById("rulesId");
+    
+    function visualizeArea(optionSelected,areaId){
+        areaId.innerHTML = "";
+        let getElems = "/ESP"+ optionSelected;
+        const path = ref(db,getElems);
+        onValue(path,(snapshot) => {
+            const data = snapshot.val();
+            // Create HTML elements, then append them to areaId
+            // Get keys from database/topic
+            let keySensors = Object.keys(data.sensors);
+            console.log(keySensors);
+            // Create divs to append elements later
+            let arrayId = [];        
+            for(let i = 0 ; i< data.numSens ; i++) {
+                let sensorsNameKey = "sensorName" + (i + 1);
+                arrayId.push(sensorsNameKey);
 
-    let select = document.getElementById("routing");
-    select.addEventListener("change",() =>{
-    // Populate the 3 sections:
-    // Area (show property and values of sensors ONLY) 
-        let optionSelected = select.options[select.selectedIndex].text;
-        let getTable = "/ESP"+ optionSelected;
+                let sensorsValueKey = "sensorNormalValue" + (i + 1);
+                arrayId.push(sensorsValueKey);
+                
+                let sensorsMeasUnitKey = "sensorMeasUnit"+ (i + 1);
+                arrayId.push(sensorsMeasUnitKey);
+
+                let divSectionSensor = document.createElement("div");
+                divSectionSensor.setAttribute("class","d-flex mt-1");
+                let divSensorName = document.createElement("div");
+                divSensorName.setAttribute("id",sensorsNameKey);
+                let divAllocValMeas = document.createElement("div");
+                divAllocValMeas.setAttribute("class","hstack gap-2 ms-auto");
+                let divSensorValue = document.createElement("div");
+                divSensorValue.setAttribute("id",sensorsValueKey);
+                let divSensorMeasUnit = document.createElement("div");
+                divSensorMeasUnit.setAttribute("id",sensorsMeasUnitKey);
+                divSensorMeasUnit.setAttribute("class","ms-auto");
+                areaId.appendChild(divSectionSensor);
+                divAllocValMeas.appendChild(divSensorValue);
+                divAllocValMeas.appendChild(divSensorMeasUnit);
+                divSectionSensor.appendChild(divSensorName);
+                divSectionSensor.appendChild(divAllocValMeas);
+            }
+            
+            console.log(arrayId);
+            //Populate divs
+            for(let index = 0 ; index < keySensors.length ; index++) {
+                let indArrayId = arrayId[index];
+                let selById = document.getElementById(indArrayId);
+                selById.append(data.sensors[indArrayId]);
+            };
+            
+        })
+    }
+    
+    function visualizeAlerts(optionSelected,alertsId){
+        alertsId.innerHTML = "";
+        let getAlerts = "/ESP"+ optionSelected + arrayZones[1];
+        let getActuators = "/ESP"+ optionSelected + arrayZones[2];
+        const path = ref(db,getTable);
+        onValue(path,(snapshot) =>{
+            if(snapshot.exists()){
+                const data = snapshot.val();
+                const keys = Object.keys(data);
+                
+                console.log(keys);
+                // Append Alerts if happened & Actuators == "ON"
+            }
+        });
+    }
+    function visualizeRules(optionSelected,rulesId){
+        rulesId.innerHTML = "";
+        let getTable = "/ESP"+ optionSelected + arrayZones[1];
         const path = ref(db,getTable);
         onValue(path,(snapshot) =>{
             if(snapshot.exists()){
                 const data = snapshot.val();
                 const keys = Object.keys(data);
                 console.log(keys);
+                // Create form with Alerts Edition, then set to "/ESP" + optionSelected + arrayZones[1];
             }
         });
-        
+    }
+
+    let select = document.getElementById("routing");
+    select.addEventListener("change",() =>{
+        if (select.value === "default"){
+            return;
+        }
+        else{
+        let optionSelected = select.options[select.selectedIndex].text;
+        visualizeArea(optionSelected,areaId);
+        }
     // Alert(check values if above/below normal values, i.e, between sensorValues and sensorAlertValues,also show actuators ON and OFF)  
 
     // Rules( create form with new set of alert values, then "update" values in topic of Firebase)

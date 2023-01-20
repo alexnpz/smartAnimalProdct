@@ -107,14 +107,11 @@ var app = (function() {
    getFbValues(elemsSystems[0]);
    getFbValues(elemsSystems[1]);
     
-        
-    
     //Control Panel add&remove visualization with use of add/remove to Firebase
     // Send add/remove to Firebase
     function sendFbValues (spaSendFb,dbDir) {
         const path = ref(db,dbDir);
         const postFirebase = set(path, spaSendFb);
-        
     }
 
     //sendFbValues(spaSendFb,'/spaFirebase'); -> rulesControl adapt    
@@ -137,13 +134,11 @@ var app = (function() {
             }
         //rulesControl('sheepfoldform','/rulesSheeps');
         //console.log(formData);
-        
+        // Get data from Firebase RTDB, then get data inputted by form and "update" (set) the values given
         const path = ref(db,pathFile);
         const postFirebase = set(path, formData);
-        
     }
 
-    
     document.getElementById("btnSaveRulesSheep").addEventListener("click", () => rulesControl("sheepfoldform","/rulesSheeps"));
     
     

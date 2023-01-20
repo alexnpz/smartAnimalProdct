@@ -116,7 +116,7 @@ var app = (function() {
         
     }
 
-    //sendFbValues(spaSendFb,'/spaFirebase'); -> rulesControl adapt
+    sendFbValues(spaSendFb,'/spaFirebase'); //-> rulesControl adapt
     
     function rulesControl(id,pathFile){
         let formRules = document.getElementById(id);
