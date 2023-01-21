@@ -155,7 +155,7 @@ var app = (function() {
         else{
         let optionSelected = select.options[select.selectedIndex].text;
         visualizeArea(optionSelected,areaId);
-        visualizeAlerts(optionSelected,alertsId);
+        //visualizeAlerts(optionSelected,alertsId);
         }
     // Alert(check values if above/below normal values, i.e, between sensorValues and sensorAlertValues,also show actuators ON and OFF)  
 
