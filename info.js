@@ -8,6 +8,7 @@ $().ready(function () {
   let weatherObj = {};
   function weatherToday () {
     //$.getJSON("")
+    
     $.getJSON("https://api.ipgeolocation.io/ipgeo?apiKey=554653b913b04d24b5a7e80804f95a82", function(rsp){
       let $country_name = rsp.country_name;
       weatherObj["location"] = $country_name;
