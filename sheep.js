@@ -37,7 +37,13 @@ var app = (function() {
     // String array with path for every system associated with areas
     const elemsSystems = ['/ESPSheep/sensors/','/ESPSheep/actuators/'];
    // const dir = ref (db, systSelected);
-    function getFbValues(systSelected){
+   async function doorControl (){
+    let doorControl = document.getElementById("servoDoorNight");
+    // let response = await fetch('https://www.boredapi.com/api/activity?type=' + idActivity[selectionValue]);
+    // let data = await response.json();
+
+   } 
+   function getFbValues(systSelected){
         const path = ref(db,systSelected);
         onValue(path,(snapshot)=>{
             if (snapshot.exists()){
