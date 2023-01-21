@@ -4,7 +4,7 @@ var app = (function() {
     const db = getDatabase();
     const spaSendFb = {
         'lux': [0,1],
-        'door_servo': [0,1],
+        'door_servo': 1,
         'buzzer': [0,1],
         'move_left_sec': [0,1],
         'move_right_sec': [0,1],
@@ -16,27 +16,11 @@ var app = (function() {
         'temp_sensor': [0,1],
         'water_quality_sensor':[0,1],
         'minerals_servo': [0,1],
-        'door_servo_third': [0,1],
+        'door_servo_third': 1,
         'fan': [0,1]                
     };
-    // state Associated with Rules
-    const stateAssociatedSheepFold = {
-        'servomotorDoorDayNight' : ['OPEN','OPENING','CLOSING','CLOSED'],
-        'minerals' : ['ON','STOP'],
-        'fan' : ['ON','STOP'],
-        'temperature': ['YES','NO'],
-        'humidity': ['YES','NO'],
-        'waterQ': ['GOOD','DANGER'],
-    
-    };
-    const stateAssociatedChickenCoop = {
-        'motorFood' : ['ON','OFF'],
-        'lux' : ['LOW','MEDIUM','HIGH'],
-        'buzzer' : ['ON','STOP'],    
-    };
-
     const controlOptions = {
-        'servmDoorDNight' : 'Front Door',
+        'servoDoorNight' : 'Front Door',
         'minerals' : 'Minerals Motor',
         'fan' : 'Fan',
         'temperature': 'Temperature',
@@ -47,23 +31,22 @@ var app = (function() {
         'buzzer' : 'Buzzer', 
     };
 
-    const controlBools = {
-        'servmDoorDNight' : true,
-        'minerals' : false,
-        'fan' : false,
-        'temperature': true,
-        'humidity': true,
-        'waterQ': true,
-        'motorFood' : true,
-        'lux' : false,
-        'buzzer' : false, 
-    };
-
     // Create js-array and if necessary, create possibility to add using web (later)
     // String array with path for every system associated with areas
     const elemsSystems = ['/ESPChicken/sensors/','/ESPChicken/actuators/'];
    // const dir = ref (db, systSelected);
-    function getFbValues(systSelected){
+   // TODO: Door Opening in the morning -> SetInterval min + API request + sendToFirebase
+
+   // TODO: Door Closing in the afternoon -> SetInterval 5 min + API request +sendToFirebase
+
+   async function doorControl (){
+    let doorControl = document.getElementById("servoDoorNight");
+    // let response = await fetch('https://www.boredapi.com/api/activity?type=' + idActivity[selectionValue]);
+    // let data = await response.json();
+
+   }
+
+   function getFbValues(systSelected){
         const path = ref(db,systSelected);
         onValue(path,(snapshot)=>{
             if (snapshot.exists()){
@@ -116,7 +99,7 @@ var app = (function() {
         
     }
 
-    //sendFbValues(spaSendFb,'/spaFirebase'); -> rulesControl adapt
+    sendFbValues(spaSendFb,'/spaFirebase'); //-> rulesControl adapt
     
     function rulesControl(id,pathFile){
         let formRules = document.getElementById(id);
@@ -133,7 +116,8 @@ var app = (function() {
             console.log(input.value);
             console.log(formData);
             //alert(formData);
-            }
+        }
+        
         //rulesControl('sheepfoldform','/rulesSheeps');
         //console.log(formData);
         
@@ -144,4 +128,6 @@ var app = (function() {
 
     document.getElementById("btnSaveRulesChicken").addEventListener("click", () => rulesControl("chickencoopform","/rulesChicken"));    
    
+
+    
 })();

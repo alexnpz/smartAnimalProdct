@@ -1,63 +1,7 @@
-import { getDatabase, ref,set, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { getDatabase, ref,set, onValue, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 var app = (function() {
     const db = getDatabase();
-    const spaSendFb = {
-        'lux': [0,1],
-        'door_servo': [0,1],
-        'buzzer': [0,1],
-        'move_left_sec': [0,1],
-        'move_right_sec': [0,1],
-        'servo_left_sec': [0,1],
-        'servo_right_sec': [0,1],
-        'ultrassonic': [0,1],
-        'lcd': [0,1],
-        'hum_sensor': [0,1],
-        'temp_sensor': [0,1],
-        'water_quality_sensor':[0,1],
-        'minerals_servo': [0,1],
-        'door_servo_third': [0,1],
-        'fan': [0,1]                
-    };
-    // state Associated with Rules
-    const stateAssociatedSheepFold = {
-        'servomotorDoorDayNight' : ['OPEN','OPENING','CLOSING','CLOSED'],
-        'minerals' : ['ON','STOP'],
-        'fan' : ['ON','STOP'],
-        'temperature': ['YES','NO'],
-        'humidity': ['YES','NO'],
-        'waterQ': ['GOOD','DANGER'],
-    
-    };
-    const stateAssociatedChickenCoop = {
-        'motorFood' : ['ON','OFF'],
-        'lux' : ['LOW','MEDIUM','HIGH'],
-        'buzzer' : ['ON','STOP'],    
-    };
-
-    const controlOptions = {
-        'servmDoorDNight' : 'Front Door',
-        'minerals' : 'Minerals Motor',
-        'fan' : 'Fan',
-        'temperature': 'Temperature',
-        'humidity': 'Humidity',
-        'waterQ': 'Water Quality',
-        'motorFood' : 'Food Motor',
-        'lux' : 'Light',
-        'buzzer' : 'Buzzer', 
-    };
-    const controlBools = {
-        'servmDoorDNight' : true,
-        'minerals' : false,
-        'fan' : false,
-        'temperature': true,
-        'humidity': true,
-        'waterQ': true,
-        'motorFood' : true,
-        'lux' : false,
-        'buzzer' : false, 
-    };
-
     // Get Routes
     function routes(){
         const path = ref(db,'routes');
@@ -80,22 +24,139 @@ var app = (function() {
         );
     }
     routes();
+    
+    let arrayZones = ["/sensors","/alerts","/actuators"];
+    let areaId = document.getElementById("areaId");
+    let alertsId = document.getElementById("alertsId");
+    let rulesId = document.getElementById("rulesId");
+    
+    function visualizeArea(optionSelected,areaId){
+        areaId.innerHTML = "";
+        let getElems = "/ESP"+ optionSelected;
+        const path = ref(db,getElems);
+        onValue(path,(snapshot) => {
+            const data = snapshot.val();
+            // Create HTML elements, then append them to areaId
+            // Get keys from database/topic
+            let keySensors = Object.keys(data.sensors);
+            console.log(keySensors);
+            // Create divs to append elements later
+            let arrayId = [];        
+            for(let i = 0 ; i< data.numSens ; i++) {
+                let sensorsNameKey = "sensorName" + (i + 1);
+                arrayId.push(sensorsNameKey);
 
-    let select = document.getElementById("routing");
-    select.addEventListener("change",() =>{
-    // Populate the 3 sections:
-    // Area (show property and values of sensors ONLY) 
-        let optionSelected = select.options[select.selectedIndex].text;
-        let getTable = "/ESP"+ optionSelected;
+                let sensorsValueKey = "sensorNormalValue" + (i + 1);
+                arrayId.push(sensorsValueKey);
+                
+                let sensorsMeasUnitKey = "sensorMeasUnit"+ (i + 1);
+                arrayId.push(sensorsMeasUnitKey);
+
+                let divSectionSensor = document.createElement("div");
+                divSectionSensor.setAttribute("class","d-flex mt-1");
+                let divSensorName = document.createElement("div");
+                divSensorName.setAttribute("id",sensorsNameKey);
+                let divAllocValMeas = document.createElement("div");
+                divAllocValMeas.setAttribute("class","hstack gap-2 ms-auto");
+                let divSensorValue = document.createElement("div");
+                divSensorValue.setAttribute("id",sensorsValueKey);
+                let divSensorMeasUnit = document.createElement("div");
+                divSensorMeasUnit.setAttribute("id",sensorsMeasUnitKey);
+                divSensorMeasUnit.setAttribute("class","ms-auto");
+                areaId.appendChild(divSectionSensor);
+                divAllocValMeas.appendChild(divSensorValue);
+                divAllocValMeas.appendChild(divSensorMeasUnit);
+                divSectionSensor.appendChild(divSensorName);
+                divSectionSensor.appendChild(divAllocValMeas);
+            }
+            
+            console.log(arrayId);
+            //Populate divs
+            for(let index = 0 ; index < keySensors.length ; index++) {
+                let indArrayId = arrayId[index];
+                let selById = document.getElementById(indArrayId);
+                selById.append(data.sensors[indArrayId]);
+            };
+            
+        })
+    }
+
+    function visualizeAlerts(optionSelected,alertsId){
+        alertsId.innerHTML = "";
+        let getElems = "/ESP"+ optionSelected;
+        const path = ref(db,getElems);
+        onValue(path,(snapshot) =>{
+            if(snapshot.exists()){
+                const data = snapshot.val();
+                const keysSensors = Object.keys(data.sensors);
+                const keysAlerts = Object.keys(data.alerts);
+                        
+                console.log(keysSensors);
+                console.log(keysAlerts);
+                
+
+                // Append Alerts if happened
+            
+
+                // Create object with {actuatorName, actuatorState} structure-format
+                let actObj = {};
+                Object.keys(data.actuators).forEach(key => {
+                if (key.endsWith("State")) {
+                    const actuatorName = key.slice(0, -5);
+                    actObj[data.actuators[actuatorName]] = data.actuators[key];
+                }
+                });
+                console.log(actObj);
+                let keysActObj = Object.keys(actObj);
+
+                // Check if Actuators == "ON" with filter, then iterate using forEach populating & creating HTML elements with Boostrap structure
+                keysActObj.filter(key => actObj[key] !== 'OFF').forEach((key,index) => {
+                    let divActuator = document.createElement("div");
+                    divActuator.setAttribute("class","d-flex mt-1");
+                    divActuator.setAttribute("id","divActuator" + index);
+                    alertsId.appendChild(divActuator);
+
+                    let divActuatorName = document.createElement("div");
+                    divActuatorName.setAttribute("id","divActuatorName" + key);
+                    divActuator.append(key);
+
+                    let divActuatorSec = document.createElement("div");
+                    divActuatorSec.setAttribute("class","hstack gap-2 ms-auto")
+                    divActuator.appendChild(divActuatorSec);
+
+                    let divActuatorState = document.createElement("div");
+                    divActuatorState.setAttribute("class","hstack gap-2 ms-auto")
+                    divActuatorSec.append(actObj[key]);
+                    
+                });
+
+            }
+        });
+    }
+    function visualizeRules(optionSelected,rulesId){
+        rulesId.innerHTML = "";
+        let getTable = "/ESP"+ optionSelected + arrayZones[1];
         const path = ref(db,getTable);
         onValue(path,(snapshot) =>{
             if(snapshot.exists()){
                 const data = snapshot.val();
-                const keys = Object.keys(data);
+                const keys = Object.keys(data.sensors);
                 console.log(keys);
+                // Create form with Alerts Edition;
             }
         });
-        
+    }
+
+    let select = document.getElementById("routing");
+    select.addEventListener("change",() =>{
+        if (select.value === "default"){
+            return;
+        }
+        else{
+        let optionSelected = select.options[select.selectedIndex].text;
+        visualizeArea(optionSelected,areaId);
+        visualizeAlerts(optionSelected,alertsId);
+        }
     // Alert(check values if above/below normal values, i.e, between sensorValues and sensorAlertValues,also show actuators ON and OFF)  
 
     // Rules( create form with new set of alert values, then "update" values in topic of Firebase)

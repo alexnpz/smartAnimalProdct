@@ -53,33 +53,15 @@
                             <!--Sensors-->
                             <div class="d-flex mt-1">
                                 <div>
-                                    <i class="fas fa-temperature-empty text-danger"></i>
+                                    <i class="fas fa-sun-empty text-danger"></i>
                                     <strong>Luminosity</strong>
                                 </div>  
                                 <div class="hstack gap-2 ms-auto"> 
                                     <div id="luminosity">
-                                        1   
+                                        LOW   
                                     </div> 
-                                    <div class="ms-auto"> 
-                                        lx
-                                    </div>  
                                 </div>
                             </div>
-                            <div class="d-flex mt-1">
-                                <div>
-                                    <i class="fa-solid fa-snowflake text-primary"></i>
-                                    <strong>Humidity</strong>
-                                </div>  
-                                <div class="hstack gap-2 ms-auto"> 
-                                    <div id="weight">
-                                        800   
-                                    </div> 
-                                    <div class="ms-auto"> 
-                                        gm
-                                    </div>  
-                                </div>
-                            </div>
-                            
                         </div>
                     </div>
                 </div>
@@ -96,7 +78,7 @@
                                     <strong>Door</strong>
                                 </div>  
                                 <div class="hstack gap-2 ms-auto"> 
-                                    <div id="servmDoorDNight2">
+                                    <div id="servoDoorNight">
                                         Opening   
                                     </div>  
                                 </div>
@@ -124,26 +106,54 @@
                             <form id="chickencoopform" class="formRules">
                                 <div class="row">
                                     <div class="col">
-                                        <label for="rluminosity">Luminosity</label>
+                                        <label id="rluminosity">Luminosity</label>
                                     </div>
                                     <div class="col">
-                                        <input id="rluminositymin"class="form-control" type="text" placeholder="Set minimum value" name="rluminositymin">
+                                        <input id="rluminositymin" class="form-control" type="number" placeholder="Set minimum value" name="rluminositymin">
                                     </div>
                                     <div class="col">
-                                        <input id="rluminositymax" class="form-control" type="text" placeholder="Set maximum value" name="rluminositymax">
+                                        <input id="rluminositymax" class="form-control" type="number" placeholder="Set maximum value" name="rluminositymax">
                                     </div>
                                 </div>
                                 <div>
                                   <label for="leftMovSensor">Left Movement Sensor</label>
-                                  <input id="leftMovSensor" type="text" placeholder="Set value" name="leftMovSensor">
+                                  <input id="leftMovSensor" type="number" placeholder="Set value" name="leftMovSensor">
                                 </div>
                                 <div>
                                     <label for="rightMovSensor">Right Movement Sensor</label>
-                                    <input id="rightMovSensor" type="text" placeholder="Set value" name="rightMovSensor">
+                                    <input id="rightMovSensor" type="number" placeholder="Set value" name="rightMovSensor">
                                 </div>
                                 <div>
                                   <label for="ultrasonic">Ultrasonic</label>
-                                  <input id="ultrasonic" type="text" placeholder="Set value here" name="ultrasonic">
+                                  <input id="ultrasonic" type="number" placeholder="Set value here" name="ultrasonic">
+                                </div>
+                                <div>
+                                    <label for="buzzer_freq">Buzzer Frequency</label>
+                                    <input id="buzzer_freq" type="number" placeholder="Set value here" name="buzzer_freq">
+                                </div>
+                                <div>
+                                    <label for="ultrassonic_floor">Ultrasonic Floor</label>
+                                    <input id="ultrassonic_floor" type="number" placeholder="Set value here" name="ultrassonic_floor">
+                                </div>
+                                <div>
+                                    <label for="height_recip">Distance to Vessel</label>
+                                    <input id="height_recip" type="number" placeholder="Set value here" name="height_recip">
+                                </div>
+                                <div>
+                                    <label for="dist_max">Maximum Distance</label>
+                                    <input id="dist_max" type="number" placeholder="Set value here" name="dist_max">
+                                </div>
+                                <div>
+                                    <label for="weight_max">Maximum Weight</label>
+                                    <input id="weight_max" type="number" placeholder="Set value here" name="weight_max">
+                                </div>
+                                <div>
+                                    <label for="lim_perc">Limit Percentage of Food</label>
+                                    <input id="lim_perc" type="number" placeholder="Set value here" name="lim_perc">
+                                </div>
+                                <div>
+                                    <label for="lim_steady_state">Animal Eating Time</label>
+                                    <input id="lim_steady_state" type="number" placeholder="Set value here" name="lim_steady_state">
                                 </div>
                                 <input id="btnSaveRulesChicken" type="submit" value="Submit">
                             </form>                  

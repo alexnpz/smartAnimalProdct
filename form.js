@@ -1,4 +1,4 @@
-import { getDatabase, ref,set,onValue,off} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { getDatabase, ref,set,onValue,off,child} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 var app = (function() {
         const db = getDatabase();
@@ -26,34 +26,54 @@ var app = (function() {
                  //console.log(formData);
             //     alert(formData);
             }
+            let numElems = {};
+            let sensorsData = {};
+            let alertsData = {};
+            let actuatorsData = {};
 
-            let jsonData = {};
             for (const [key, value] of formData.entries()) {
-                jsonData[key] = value;
-                
+                if(key.includes("numSens") || key.includes("numActs")){
+                    numElems[key] = value;
+                }
+                if(key.includes("sensor")){
+                    sensorsData[key] = value;
+                }
+                else if(key.includes("alert")){
+                    alertsData[key] = value;
+                }
+                else if(key.includes("actuator")){
+                    actuatorsData[key] = value;
+                }
             }
-            console.log(jsonData);
             const zoneName = formData.get("zoneName");
             // console.log(typeof zoneName);
             // // const jsonString = JSON.stringify(jsonData);
             const stringZone = "/ESP" + zoneName;
             console.log(stringZone);
-            // TODO: Create 3 childs: sensors, alerts and actuators
-
-            const dbPath = ref(db,stringZone);
+            let arrayZones = ["sensors","alerts","actuators"];
             
-            set(dbPath, jsonData);
+            console.log(arrayZones[0]);
+            
+            //console.log(subpath);
+            const dbPath = ref(db,stringZone);
+            const dbPathSensors = ref(db,stringZone + "/"+ arrayZones[0]);
+            const dbPathAlerts = ref(db,stringZone + "/" + arrayZones[1]);
+            const dbPathActuators = ref(db,stringZone + "/"+ arrayZones[2]);
+            set(dbPath,numElems);
+            set(dbPathSensors,sensorsData);
+            set(dbPathAlerts,alertsData);
+            set(dbPathActuators,actuatorsData);
+
             const routesPath = ref(db,"routes");
             let routeObj = {};
             let key = Math.floor(Math.random() * Math.pow(10, 8));
             routeObj[key] = zoneName;
-            // set(routesPath,zoneName);
             
             // Check if value exists, if does then appends new value and if doesn't create the table
             let locationExists = false;
             onValue(routesPath,(snapshot)  => {
                 if (snapshot.exists() && !locationExists){
-                    console.log("Location exists");
+                    console.log("Location exists, updating...");
                     locationExists = true;
                     let data = snapshot.val();
                     Object.assign(data,routeObj);
@@ -63,7 +83,7 @@ var app = (function() {
                     return;
                 }
                 if(!snapshot.exists() && !locationExists){
-                    console.log("Location doesnt exist");
+                    console.log("Location doesnt exist, creating new one...");
                     locationExists = true;
                     let data = {};
                     Object.assign(data,routeObj);
@@ -71,13 +91,15 @@ var app = (function() {
                     off(routesPath);
                     return;
                 }
-            });   
+            });
+            //TODO: Alert and then put all formData to previous state,blank or unselected  
         }
         document.getElementById("addDetails").addEventListener("click",()=>{
             console.log("hurray");
             valForm();
         });
         
+        const zoneExists = document.getElementById("zoneName");
         const numSens = document.getElementById("numSens");
         const numActs = document.getElementById("numActs");
         const sensorsFields = document.getElementById("sensorsFields");
@@ -106,7 +128,7 @@ var app = (function() {
                     alertArray.push(newMinValue.id);
                     newMinValue.type = "number";
                     newMinValue.className ="numbVal";
-                    newMinValue.name = "sensorMinValue";
+                    newMinValue.name = "alertMinValue";
     
                     const newLabMaxValue = document.createElement("label");
                     newLabMaxValue.innerHTML = "Max Value" + ":";
@@ -116,7 +138,7 @@ var app = (function() {
                     alertArray.push(newMaxValue.id);
                     newMaxValue.type = "number";
                     newMaxValue.className ="numbVal";
-                    newMaxValue.name = "sensorMaxValue";
+                    newMaxValue.name = "alertMaxValue";
 
                     divOptions.appendChild(newLabMinValue);
                     divOptions.appendChild(newMinValue);
@@ -134,7 +156,7 @@ var app = (function() {
 
                     newAlertValue.type = "number";
                     newAlertValue.className ="numbVal";
-                    newAlertValue.name = "sensorAlertValue";
+                    newAlertValue.name = "alertValue";
                     divOptions.appendChild(newLabAlertValue);
                     divOptions.appendChild(newAlertValue);
                     return alertArray;
@@ -149,7 +171,7 @@ var app = (function() {
 
                     newAlertValue.type = "number";
                     newAlertValue.className ="numbVal";
-                    newAlertValue.name = "sensorAlertValue";
+                    newAlertValue.name = "alertValue";
                     divOptions.appendChild(newLabAlertValue);
                     divOptions.appendChild(newAlertValue);
                     return alertArray;
@@ -157,6 +179,7 @@ var app = (function() {
             });
         }
         
+        //TODO: Validate just numbers and letters
         //Validation Function /^[A-Za-z0-9]{0,20}$/
         // function strVal() {
         //     let strValClass = document.getElementsByClassName("strVal");
@@ -171,6 +194,11 @@ var app = (function() {
         //     }
         // }
         
+        //TODO: Zone exists()
+        zoneExists.addEventListener("change",()=>{
+
+        });
+
         numSens.addEventListener("change",()=>{
             // strVal();
             sensorsFields.innerHTML = "";
