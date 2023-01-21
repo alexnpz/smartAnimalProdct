@@ -50,41 +50,7 @@
                         <div class="card-body">
                             <h5 class="card-title text-center">Area</h5>
                             <!--Sensors-->
-                            <div class="d-flex mt-1">
-                                <div>
-                                    <!--Sensor Temperature-->
-                                    
-                                    <strong>Temperature</strong>
-                                </div>  
-                                <div class="hstack gap-2 ms-auto"> 
-                                    <div id="temperature">
-                                        25.0   
-                                    </div>  
-                                </div>
-                            </div>
-                            <div class="d-flex mt-1">
-                                <div>
-                                    <!--Sensor Humidity-->
-                                    
-                                    <strong>Humidity</strong>
-                                </div>  
-                                <div class="hstack gap-2 ms-auto"> 
-                                    <div id="humidity">
-                                        80   
-                                    </div> 
-                                </div>
-                            </div>
-                            <div class="d-flex mt-1">
-                                <div>
-                                    
-                                    <!--Success good, warning medium and danger bad quality,text-success, text-warning and text-danger -->
-                                    <strong>Water Quality</strong>
-                                </div>  
-                                <div class="hstack gap-2 ms-auto"> 
-                                    <div id="waterQ">
-                                        DANGER   
-                                    </div> 
-                                </div>
+                            <div id="areaSheepId">   
                             </div>
                         </div>
                     </div>
@@ -92,73 +58,7 @@
                         <div class="card-body">
                             <h5 class="card-title text-center">Alerts</h5>
                             <!--Actuators-->
-                            <div class="d-flex mt-1">
-                                <!--Door-->
-                                <div>
-                                    
-                                    <!--<i class="fa-solid fa-door-closed"></i>-->
-                                    <strong>Door</strong>
-                                </div>  
-                                <div class="hstack gap-2 ms-auto"> 
-                                    <div id="servmDoorDNight">
-                                        Opening   
-                                    </div>  
-                                </div>
-                            </div>
-                            <!--Minerals-->
-                            <div class="d-flex mt-1">
-                                <div> 
-                                    
-                                    <!--<i class="fa-regular fa-gem"></i>-->
-                                    <strong>Minerals</strong>
-                                </div>  
-                                <div class="hstack gap-2 ms-auto"> 
-                                    <div id="minerals">
-                                        Open   
-                                    </div> 
-                                </div>
-                            </div>
-                            <!--Fan-->
-                            <div class="d-flex mt-1">
-                                <div>
-                                    
-                                    <!--<i class="fa-solid fa-hurricane text-dark"></i>-->
-                                    <strong>Fan</strong>
-                                </div>  
-                                <div class="hstack gap-2 ms-auto"> 
-                                    <div id="fan">
-                                        Working   
-                                    </div> 
-                                </div>
-                            </div>
-                            <!--Led Tmp-->
-                            <div class="d-flex mt-1">
-                                <div>
-                                    
-                                    <!--<i class="fa-solid fa-temperature text-success text-danger"></i>-->
-                                    <!--<i class="fa-solid fa-temperature text-success"></i>-->
-                                    <!--<i class="fa-solid fa-temperature-arrow-down text-danger"></i>-->
-                                    <strong>Temperature Warning</strong>
-                                </div>  
-                                <div class="hstack gap-2 ms-auto"> 
-                                    <div id="temperaturemsg">
-                                        YES   
-                                    </div> 
-                                </div>
-                            </div>
-
-                            <div class="d-flex mt-1">
-                                <div>
-                                    
-                                    <!-- <i class="fa-solid fa-snowflake text-danger"></i> -->
-                                    <strong>Humidity Warning</strong>
-                                </div>  
-                                <div class="hstack gap-2 ms-auto"> 
-                                    <div id="humiditymsg">
-                                        NO   
-                                    </div> 
-                                </div>
-                            </div>
+                            <div id="alertSheepId"></div>
                         </div>
                     </div>
                 </div>
@@ -170,10 +70,10 @@
                             <form id="sheepfoldform" class="formRules">
                                 <div class="row">
                                     <div class="col">
-                                        <label for="rtemperature">Temperature</label>
+                                        <label>Temperature</label>
                                     </div>
                                     <div class="col">
-                                        <input id="rtemperaturemin"class="form-control" type="text" placeholder="Set minimum value" name="rtemperaturemin">
+                                        <input id="rtemperaturemin" class="form-control" type="text" placeholder="Set minimum value" name="rtemperaturemin">
                                     </div>
                                     <div class="col">
                                         <input id="rtemperaturemax" class="form-control" type="text" placeholder="Set maximum value" name="rtemperaturemin">
@@ -183,18 +83,32 @@
                                 <div class="d-flex mt-1">
                                     
                                 </div>
-                                <div>
-                                  <label for="rthumidity">Humidity</label>
-                                  <input id="rthumiditymin" type="text" placeholder="Set minimum value (%)" name="rthumiditymin">
-                                  <input id="rthumiditymax" type="text" placeholder="Set maximum value(%)" name="rthumiditymax">
+                                <div class="row">
+                                    <div class="col">
+                                        <label >Humidity</label>
+                                    </div>
+                                    <div class="col">
+                                        <input id="rthumiditymin" class="form-control" type="text" placeholder="Set minimum value (%)" name="rthumiditymin">
+                                    </div>
+                                    <div class="col">
+                                        <input id="rthumiditymax" class="form-control" type="text" placeholder="Set maximum value(%)" name="rthumiditymax">
+                                    </div>                    
                                 </div>
-                                <div>
-                                  <label for="rwquality">Water Quality</label>
-                                  <input name="rwquality" type="text" placeholder="Set value here" name="rwquality">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="rwquality">Water Quality</label>
+                                    </div>
+                                    <div class="col">
+                                        <input id="rwquality" class="form-control" type="text" placeholder="Set value" name="rwquality">
+                                    </div>            
                                 </div>
-                                <div>
-                                  <label for="rdoor">Door Open</label>
-                                  <input id="rdoor" type="text" placeholder="Set value here" name="rdoor">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="rdoor">Door Open</label>
+                                    </div>
+                                    <div class="col">
+                                        <input id="rdoor" class="form-control" type="text" placeholder="Set value" name="rdoor">
+                                    </div>                  
                                 </div>
                                 <input id="btnSaveRulesSheep" type="submit" value="Submit">
                             </form>                  

@@ -2,6 +2,7 @@ import { getDatabase, ref,set, onValue, update,off,remove } from "https://www.gs
 
 var app = (function() {
     const db = getDatabase();
+    const path = ref(db,"ESPChicken");
     const spaSendFb = {
         'lux': [0,1],
         'door_servo': 1, //Door ChickenCoop
@@ -216,7 +217,7 @@ var app = (function() {
     //         }
     //     });
     // }
-    const path = ref(db,"ESPChicken");
+    
     function zoneAdd(){ 
         zonEditSection();
         const numSens = document.createElement("input");
@@ -438,25 +439,10 @@ var app = (function() {
         'buzzer' : 'Buzzer', 
     };
 
-    // Create js-array and if necessary, create possibility to add using web (later)
-    // String array with path for every system associated with areas
-    const elemsSystems = ['/ESPChicken/sensors/','/ESPChicken/actuators/'];
-   // const dir = ref (db, systSelected);
-   // TODO: Door Opening in the morning -> SetInterval min + API request + sendToFirebase
-
-   // TODO: Door Closing in the afternoon -> SetInterval 5 min + API request +sendToFirebase
-
-//    async function doorControl (){
-//     let doorControl = document.getElementById("servoDoorNight");
-//     // let response = await fetch('https://www.boredapi.com/api/activity?type=' + idActivity[selectionValue]);
-//     // let data = await response.json();
-
-//    }
+    
    let areaChickenId = document.getElementById("areaChickenId");
    let alertChickenId = document.getElementById("alertChickenId");
    function visualizeArea(){
-    let getElems = "/ESPChicken";
-        const path = ref(db,getElems);
         onValue(path,(snapshot) =>{
             if(snapshot.exists()){
                 areaChickenId.innerHTML = "";

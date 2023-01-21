@@ -1,7 +1,8 @@
-import { getDatabase, ref,set, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { getDatabase, ref,set, onValue,remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 var app = (function() {
     const db = getDatabase();
+    const path = ref(db,"ESPSheep");
     const spaSendFb = {
         'lux': [0,1],
         'door_servo': 1, //Door ChickenCoop
@@ -31,7 +32,7 @@ var app = (function() {
             case "add":
                 // Create 2 inputs specifying numbers of sensors & actuators, then each one, then values and submit -> See form.js    
                 document.getElementById("zoneElem").innerHTML = "";
-                zoneAdd()
+                zoneAdd();
                 break;
             case "remove":
                 document.getElementById("zoneElem").innerHTML = "";
@@ -81,17 +82,16 @@ var app = (function() {
     }
     
     function zoneEdit(){
-        const path = ref(db,"ESPSheep");
-        // Creates checkbox
+        
         onValue(path,(snapshot)=>{
             if (snapshot.exists()){
+                document.getElementById("zoneElem").innerHTML = "";
                 const data = snapshot.val();
                 const keysSensors = Object.keys(data.sensors);
                 const keysActuators = Object.keys(data.actuators);
                 
                 zonEditSection();
                 
-                console.log("hurray");
                 //console.log(data);
                 // Create multiple checkbox for Sensors
                 keysSensors.forEach((key) => {     
@@ -135,15 +135,16 @@ var app = (function() {
                 }
                 
                 btZnEdit.addEventListener("click",() =>{
+                    const pathSPA = ref(db,"/spaFirebase");
                     const checkedCheckboxes = document.querySelectorAll("input[type='checkbox'][checked]");
                     let newSpaFirebase = {};
                     for (let i = 0; i < checkedCheckboxes.length; i++) {
                         let parent = checkedCheckboxes[i].parentNode;
                         let keyText = parent.textContent;
-                        newSpaFirebase[keyText] = "0"
+                        newSpaFirebase[keyText] = "0";
                         }
                     //console.log(newSpaFirebase);
-                    const pathSPA = ref(db,"/spaFirebase");
+                    // use remove to sensor, fi was then use remove
                     update(pathSPA,newSpaFirebase)
                     off(pathSPA);
                     });
@@ -152,9 +153,71 @@ var app = (function() {
 
         );
     }
+    // function selectAlerts(selectClass,divOptions){
+    //     strVal();
+    //     selectClass.addEventListener("change", () => {
+    //         divOptions.innerHTML = "";
+    //         let alertArray = [];
+    //         if(selectClass.value ==="selected"){
+    //             return false;
+    //         }
+    //         else if(selectClass.value === "range"){
+    //             const newLabMinValue = document.createElement("label");
+    //             newLabMinValue.innerHTML = "Min Value" + ":";
+
+    //             const newMinValue = document.createElement("input");
+    //             newMinValue.type = "number";
+    //             newMinValue.className ="alertSenValMin";
+    //             newMinValue.name = "alertMinValue";
+    //             alertArray.push(newMinValue.className);
+
+    //             const newLabMaxValue = document.createElement("label");
+    //             newLabMaxValue.innerHTML = "Max Value" + ":";
+
+    //             const newMaxValue = document.createElement("input"); 
+    //             newMaxValue.type = "number";
+    //             newMaxValue.className ="alertSenValMax";
+    //             newMaxValue.name = "alertMaxValue";
+    //             alertArray.push(newMaxValue.className);
+
+    //             divOptions.appendChild(newLabMinValue);
+    //             divOptions.appendChild(newMinValue);
+    //             divOptions.appendChild(newLabMaxValue);
+    //             divOptions.appendChild(newMaxValue);
+    //             return alertArray;
+    //         }
+    //         else if(selectClass.value === "below") {
+    //             const newLabAlertValue = document.createElement("label");
+    //             newLabAlertValue.innerHTML = "Alert Value" + ":";
+
+    //             const newAlertValue = document.createElement("input");
+        
+    //             newAlertValue.type = "number";
+    //             newAlertValue.className ="alertSenVal";
+    //             alertArray.push(newAlertValue.className);
+    //             newAlertValue.name = "alertValue";
+    //             divOptions.appendChild(newLabAlertValue);
+    //             divOptions.appendChild(newAlertValue);
+    //             return alertArray;
+    //         }
+    //         else if(selectClass.value === "above"){
+    //             const newLabAlertValue = document.createElement("label");
+    //             newLabAlertValue.innerHTML = "Alert Value" + ":";
+
+    //             const newAlertValue = document.createElement("input");
+               
+    //             newAlertValue.type = "number";
+    //             newAlertValue.className ="alertSenVal";
+    //             newAlertValue.name = "alertValue";
+    //             alertArray.push(newAlertValue.className);
+    //             divOptions.appendChild(newLabAlertValue);
+    //             divOptions.appendChild(newAlertValue);
+    //             return alertArray;
+    //         }
+    //     });
+    // }
     
     function zoneAdd(){
-        const path = ref(db,"ESPChicken");
         zonEditSection();
         const numSens = document.createElement("input");
         numSens.setAttribute("id","numSensId");
@@ -171,128 +234,193 @@ var app = (function() {
         const numSensId = document.getElementById("numSensId");
         const numActsId = document.getElementById("numActsId");
         //TODO, create new div row, 2 div col with Ids sensorsFields & actuatorsFields
-        
-        // const sensorsFields = document.getElementById("sensorsFields");
-        // const actuatorsFields = document.getElementById("actuatorsFields");
-        // numSensId.addEventListener("change",()=>{
-        //     // strVal();
-        //     sensorsFields.innerHTML = "";
-        //     let numSensors = parseInt(numSens.value);
-        //     console.log(numSensors);
-        //     if (isNaN(numSensors)) {
-        //         numSensors = 0;
-        //     }
-        //     for (let i = 0; i < numSensors; i++) {
-        //         // Create a new label
-        //         const newLabelName = document.createElement("label");
-        //         newLabelName.innerHTML = "Sensor Name" + (i + 1) + ":";
+        const divRowAdd = document.createElement("div");
+        divRowAdd.setAttribute("id","divRowAdd");
+        divRowAdd.setAttribute("class","row");
+        zoneEditForm.appendChild(divRowAdd);
 
-        //         // Create a new sensor with name and normal value
-        //         const newInputName = document.createElement("input");
-        //         newInputName.type = "text";
-        //         newInputName.name = "sensorName" + (i + 1);
+        const divColSensAdz = document.createElement("div");
+        divColSensAdz.setAttribute("id","divColSensAdd");
+        divColSensAdz.setAttribute("class","col");
+        divRowAdd.appendChild(divColSensAdz);
 
-        //         const newLabInputValue = document.createElement("label");
-        //         newLabInputValue.innerHTML = "Normal Value" + ":";
+        const divColActsAdz = document.createElement("div");
+        divColActsAdz.setAttribute("id","divColActsAdd");
+        divColActsAdz.setAttribute("class","col");
+        divRowAdd.appendChild(divColActsAdz);
 
-        //         const newInputValue = document.createElement("input");
-        //         newInputValue.type = "number";
-        //         newInputValue.className ="numbVal";
-        //         newInputValue.name = "sensorNormalValue" + (i+1);
+        const divColSensAdd = document.getElementById("divColSensAdd");
+        const divColActsAdd = document.getElementById("divColActsAdd");
+        // Sensors creation
+        numSensId.addEventListener("change",()=>{
+            // strVal();
+            divColSensAdd.innerHTML = "";
+            let numSensors = parseInt(numSens.value);
+            console.log(numSensors);
+            if (isNaN(numSensors)) {
+                numSensors = 0;
+            }
+            for (let i = 0; i < numSensors; i++) {
+                // Create a new label
+                const newLabelName = document.createElement("label");
+                newLabelName.innerHTML = "Sensor Name" + (i + 1) + ":";
 
-        //         // Create measurement unit
-        //         const newMeas = document.createElement("label");
-        //         newMeas.innerHTML = "Measurement Unit" + ":";
+                // Create a new sensor with name and normal value
+                const newInputName = document.createElement("input");
+                newInputName.type = "text";
+                newInputName.className ="senNam";
+                newInputName.name = "sensorName" + (i + 1);
 
-        //         const newMeasInput = document.createElement("input");
-        //         newMeasInput.type = "text";
-        //         newMeasInput.className ="numbVal";
-        //         newMeasInput.name = "sensorMeasUnit" + (i+1);
+                const newLabInputValue = document.createElement("label");
+                newLabInputValue.innerHTML = "Normal Value" + ":";
 
-        //         // Select with options to define alert or normal range of behaviour
-        //         const newSelectLabel = document.createElement("label");
-        //         newSelectLabel.innerHTML = "Select an option that fits best for one value or a range";
+                const newInputValue = document.createElement("input");
+                newInputValue.type = "number";
+                newInputValue.className ="senVal";
+                newInputValue.name = "sensorNormalValue" + (i+1);
+
+                // // Create measurement unit
+                // const newMeas = document.createElement("label");
+                // newMeas.innerHTML = "Measurement Unit" + ":";
+
+                // const newMeasInput = document.createElement("input");
+                // newMeasInput.type = "text";
+                // newMeasInput.className ="senVal";
+                // newMeasInput.name = "sensorMeasUnit" + (i+1);
+
+                // Select with options to define alert or normal range of behaviour
+                const newSelectLabel = document.createElement("label");
+                newSelectLabel.innerHTML = "Select an option that fits best for one value or a range";
                 
-        //         const newSelect = document.createElement("select");
-        //         newSelect.id = "alertOption";
-        //         newSelect.name ="alertOption"
+                const newSelect = document.createElement("select");
+                newSelect.id = "alertOption";
+                newSelect.name ="alertOption"
 
-        //         // Select creation
-        //         const newOptSel = document.createElement("option");
-        //         newOptSel.id = "optDefault";
-        //         newOptSel.setAttribute("selected","selected");
-        //         newOptSel.setAttribute("value","selected");
-        //         newOptSel.appendChild(document.createTextNode("Pick an option"));
+                // Select creation
+                const newOptSel = document.createElement("option");
+                newOptSel.class = "optDefault";
+                newOptSel.setAttribute("selected","selected");
+                newOptSel.setAttribute("value","selected");
+                newOptSel.appendChild(document.createTextNode("Pick an option"));
                 
-        //         const newOpt1 = document.createElement("option");
-        //         newOpt1.id = "belowValue";
+                const newOpt1 = document.createElement("option");
+                newOpt1.className = "belowValue";
                 
-        //         newOpt1.setAttribute("value","below");
+                newOpt1.setAttribute("value","below");
                 
-        //         newOpt1.appendChild(document.createTextNode("Alert when below normal value"));
+                newOpt1.appendChild(document.createTextNode("Alert when below normal value"));
 
-        //         const newOpt2 = document.createElement("option");
-        //         newOpt2.id = "aboveValue";
+                const newOpt2 = document.createElement("option");
+                newOpt2.className = "aboveValue";
                 
-        //         newOpt2.setAttribute("value","above");
-        //         newOpt2.appendChild(document.createTextNode("Alert when above normal value above"));
+                newOpt2.setAttribute("value","above");
+                newOpt2.appendChild(document.createTextNode("Alert when above normal value above"));
 
-        //         const newOpt3 = document.createElement("option");
-        //         newOpt3.id = "rangeValue";
+                const newOpt3 = document.createElement("option");
+                newOpt3.className = "rangeValue";
                 
-        //         newOpt3.setAttribute("value","range");
-        //         newOpt3.appendChild(document.createTextNode("Create a range of normal behaviour values"));
+                newOpt3.setAttribute("value","range");
+                newOpt3.appendChild(document.createTextNode("Create a range of normal behaviour values"));
 
-        //         newSelect.appendChild(newOptSel);
-        //         newSelect.appendChild(newOpt1);
-        //         newSelect.appendChild(newOpt2);
-        //         newSelect.appendChild(newOpt3);
+                newSelect.appendChild(newOptSel);
+                newSelect.appendChild(newOpt1);
+                newSelect.appendChild(newOpt2);
+                newSelect.appendChild(newOpt3);
                 
-        //         const divOptions = document.createElement("div");
-        //         divOptions.id = "divOptions";
-        //         // Append the label and input to the sensorsFields div
-        //         sensorsFields.appendChild(newLabelName);
-        //         sensorsFields.appendChild(newInputName);
-        //         sensorsFields.appendChild(newLabInputValue);
-        //         sensorsFields.appendChild(newInputValue);
-        //         sensorsFields.appendChild(newMeas);
-        //         sensorsFields.appendChild(newMeasInput);
-        //         sensorsFields.appendChild(newSelectLabel);
-        //         sensorsFields.appendChild(newSelect);
-        //         sensorsFields.appendChild(divOptions);
+                const divOptions = document.createElement("div");
+                divOptions.className = "divOptions";
+                // Append the label and input to the divColSensAdd div
+                divColSensAdd.appendChild(newLabelName);
+                divColSensAdd.appendChild(newInputName);
+                divColSensAdd.appendChild(newLabInputValue);
+                divColSensAdd.appendChild(newInputValue);
+                // divColSensAdd.appendChild(newMeas);
+                // divColSensAdd.appendChild(newMeasInput);
+                divColSensAdd.appendChild(newSelectLabel);
+                divColSensAdd.appendChild(newSelect);
+                divColSensAdd.appendChild(divOptions);
 
-        //     }
-        //     // call function to detect changes in the select
-        //     let selectId = document.getElementById("alertOption");
-        //     let divOptions = document.getElementById("divOptions");
-        //     selectAlerts(selectId,divOptions);
-        //  });
+            }
+            // call function to detect changes in the select
+            let selectClass = document.getElementById("alertOption");
+            let divOptions = document.querySelectorAll("divOptions");
+            //console.log(selectClass);
+            // selectClass.addEventListener("change",() => {
+            //     console.log(selectClass);
+            //     console.log(divOptions);
+            // });
+            //selectAlerts(selectClass,divOptions);
+         });
+        // Actuators creation
+        numActsId.addEventListener("change",()=>{
+            // strVal();
+            divColActsAdd.innerHTML = "";
+            let numActuators = parseInt(numActs.value);
+            console.log(numActuators);
+            if (isNaN(numActuators)) {
+                numActuators = 0;
+            }
 
-        // numActsId.addEventListener("change",()=>{
-        //     // strVal();
-        //     actuatorsFields.innerHTML = "";
-        //     let numActuators = parseInt(numActs.value);
-        //     console.log(numActuators);
-        //     if (isNaN(numActuators)) {
-        //         numActuators = 0;
-        //     }
+            for (let i = 0; i < numActuators; i++) {
+                // Create a new label
+                const newLabelName = document.createElement("label");
+                newLabelName.innerHTML = "Actuator Name" + (i + 1) + ":";
 
-        //     for (let i = 0; i < numActuators; i++) {
-        //         // Create a new label
-        //         const newLabelName = document.createElement("label");
-        //         newLabelName.innerHTML = "Actuator Name" + (i + 1) + ":";
+                // Create a new input
+                const newInputName = document.createElement("input");
+                newInputName.type = "text";
+                newInputName.className ="actNam";
+                newInputName.name = "actuatorName" + (i + 1);
 
-        //         // Create a new input
-        //         const newInputName = document.createElement("input");
-        //         newInputName.type = "text";
-        //         newInputName.className ="strVal";
-        //         newInputName.name = "actuatorName" + (i + 1);
+                // Append the label and input to the divColActsAdd div
+                divColActsAdd.appendChild(newLabelName);
+                divColActsAdd.appendChild(newInputName);
+            }
+        });
+        // Create submit button of form
+        const btnZoneEdit = document.createElement("input");
+        btnZoneEdit.setAttribute("id","zoneFormBtn");
+        btnZoneEdit.setAttribute("type","button");
+        btnZoneEdit.setAttribute("value","Submit");
+        zoneEditForm.appendChild(btnZoneEdit);
+        let btZnEdit = document.getElementById("zoneFormBtn");
 
-        //         // Append the label and input to the actuatorsFields div
-        //         actuatorsFields.appendChild(newLabelName);
-        //         actuatorsFields.appendChild(newInputName);
-        //     }
-        // });
+        //Capture event onSubmit
+        btZnEdit.addEventListener("click",() =>{
+            const senNams = document.getElementsByClassName("senNam");
+            const senVals = document.getElementsByClassName("senVal");
+            const numActs = document.getElementsByClassName("numActs");
+            console.log(senNams);
+            //const alertVals = document.getElementsByClassName("alertVal");
+        //     let newElems = {};
+        //     let newAlertDef = {};
+        //     let sensName = "";
+        //     let normValue = "";
+        //     for (let i = 0; i < formAdd.elements.length - 1; i++) {
+        //         let input = formAdd.elements[i];
+               
+        //         console.log(input.name);
+        //         if(input.value == "" || input.value == "selected"){
+        //            alert("All fields must be filled out.");
+        //            return false;
+        //         }
+        //         else if(input.name.includes("actuator") ){
+        //            newElems[input.value] ="OFF";
+        //         }
+                
+        //         else if(input.name.includes("sensorName") ) {
+        //             let sensName = input.value;
+        //         }
+                
+                
+        //         //console.log(formData);
+        //    //     alert(formData);
+        //    }
+            //console.log(newSpaFirebase);
+            const path = ref(db,"/ESPChicken");
+            update(path,updateChicken)
+            off(path);
+        });
 
     }
 
@@ -308,70 +436,110 @@ var app = (function() {
         'buzzer' : 'Buzzer', 
     };
  
-
-    // Create js-array and if necessary, create possibility to add using web (later)
-    // String array with path for every system associated with areas
-    const elemsSystems = ['/ESPSheep/sensors/','/ESPSheep/actuators/'];
-   // const dir = ref (db, systSelected);
-   async function doorControl (){
-    let doorControl = document.getElementById("servoDoorNight");
-    // let response = await fetch('https://www.boredapi.com/api/activity?type=' + idActivity[selectionValue]);
-    // let data = await response.json();
-
-   } 
-   function getFbValues(systSelected){
-        const path = ref(db,systSelected);
-        onValue(path,(snapshot)=>{
-            if (snapshot.exists()){
+    let areaSheepId = document.getElementById("areaSheepId");
+    let alertSheepId = document.getElementById("alertSheepId");
+    
+    function visualizeArea(){
+        onValue(path,(snapshot) =>{
+            if(snapshot.exists()){
+                areaSheepId.innerHTML = "";
+                alertSheepId.innerHTML = "";
                 const data = snapshot.val();
-                const keys = Object.keys(data);
-                //console.log(data);
-                keys.forEach((key,index) => {
-                    const id = '#'+ key;
-                    let controlOptVal = controlOptions[key];
-                    //console.log(controlOptVal);
-                    //console.log(data[key]);
-                
-                    if(key ==='temperature' && (data[key] > 30 || data[key] < 20)){
-                        $('#temperaturemsg').text('YES');
-                        
-                    } else if (key ==='temperature' && (data[key] < 30 || data[key] > 20) ){
-                        $('#temperaturemsg').text('NO');
-                    }
-                    else if (key ==='humidity' && (data[key] > 85 || data[key] < 25) ){
-                        $('#humiditymsg').text('YES');
-                    }
-                    else if (key ==='humidity' && (data[key] < 85 || data[key] > 25) ){
-                        $('#humiditymsg').text('NO');
-                    }
-                    $(id).text(data[key]);
-                    // CODE TO ALTER
-                    if (systSelected.includes('sensors')){
-                        $('#sensors').append('<option value="' + index + '">' + controlOptVal + '</option>');
-                    } else{
-                        $('#actuators').append('<option value="' + index + '">' + controlOptVal + '</option>');
-                        }
-                    //console.log(`${key}: ${data[key]}`);
-                    });
-                    // END OF CODE TO ALTER
-                    //console.log(data.key);         
-                }  
-            }  
-        );
-    }
-    
-   getFbValues(elemsSystems[0]);
-   getFbValues(elemsSystems[1]);
-    
-    //Control Panel add&remove visualization with use of add/remove to Firebase
-    // Send add/remove to Firebase
-    function sendFbValues (spaSendFb,dbDir) {
-        const path = ref(db,dbDir);
-        const postFirebase = set(path, spaSendFb);
-    }
+                const sensorsArrays = Object.entries(data.sensors);
+                const actuatorsArrays = Object.entries(data.actuators);
+                console.log(sensorsArrays.length);
+                let senObj = {};
+                let actObj = {};
+                //Area, show sensors and their values
+                for(let i = 0; i < sensorsArrays.length; i++){
+                    const outerDiv = document.createElement("div");
+                    outerDiv.setAttribute("class","d-flex mt-1");
+                    const leftMostDiv = document.createElement("div");
+                    const leftStrCnt = document.createElement("strong");
+                    leftStrCnt.append(sensorsArrays[i][0]);
+                    const centDiv = document.createElement("div");
+                    centDiv.setAttribute("class","hstack gap-2 ms-auto")
+                    const rightMostDiv = document.createElement("div");
+                    areaSheepId.appendChild(outerDiv);
+                    outerDiv.appendChild(leftMostDiv);
+                    outerDiv.appendChild(centDiv);
+                    centDiv.appendChild(rightMostDiv);
+                    leftMostDiv.append(leftStrCnt);
+                    rightMostDiv.append(sensorsArrays[i][1]);
+                    
+                }
+                // Alerts, here create SetInterval with CSS Properties in red for Alerts and SetTimeout for actuators
+                // Alerts, check alertOption and check vs value
+                // check if actuatorsArrays[i][1] =="OFF" ,then not visualize
+                for(let i = 0; i < actuatorsArrays.length; i++){
+                    if(actuatorsArrays[i][1] === "ON"){
+                        const outerDiv = document.createElement("div");
+                        outerDiv.setAttribute("class","d-flex mt-1");
+                        const leftMostDiv = document.createElement("div");
+                        const leftStrCnt = document.createElement("strong");
+                        leftStrCnt.append(actuatorsArrays[i][0]);
+                        const centDiv = document.createElement("div");
+                        centDiv.setAttribute("class","hstack gap-2 ms-auto")
+                        const rightMostDiv = document.createElement("div");
+                        alertSheepId.appendChild(outerDiv);
+                        outerDiv.appendChild(leftMostDiv);
+                        outerDiv.appendChild(centDiv);
+                        centDiv.appendChild(rightMostDiv);
+                        leftMostDiv.append(leftStrCnt);
+                        rightMostDiv.append(actuatorsArrays[i][1]);
+                    }  
+                }
+            }
+        });
+   }
+   visualizeArea();
 
-    //sendFbValues(spaSendFb,'/spaFirebase'); -> rulesControl adapt    
+    // const elemsSystems = ['/ESPSheep/sensors/','/ESPSheep/actuators/'];
    
+//    function getFbValues(systSelected){
+//         const path = ref(db,systSelected);
+//         onValue(path,(snapshot)=>{
+//             if (snapshot.exists()){
+//                 const data = snapshot.val();
+//                 const keys = Object.keys(data);
+//                 //console.log(data);
+//                 keys.forEach((key,index) => {
+//                     const id = '#'+ key;
+//                     let controlOptVal = controlOptions[key];
+//                     //console.log(controlOptVal);
+//                     //console.log(data[key]);
+                
+//                     if(key ==='temperature' && (data[key] > 30 || data[key] < 20)){
+//                         $('#temperaturemsg').text('YES');
+                        
+//                     } else if (key ==='temperature' && (data[key] < 30 || data[key] > 20) ){
+//                         $('#temperaturemsg').text('NO');
+//                     }
+//                     else if (key ==='humidity' && (data[key] > 85 || data[key] < 25) ){
+//                         $('#humiditymsg').text('YES');
+//                     }
+//                     else if (key ==='humidity' && (data[key] < 85 || data[key] > 25) ){
+//                         $('#humiditymsg').text('NO');
+//                     }
+//                     $(id).text(data[key]);
+//                     // CODE TO ALTER
+//                     if (systSelected.includes('sensors')){
+//                         $('#sensors').append('<option value="' + index + '">' + controlOptVal + '</option>');
+//                     } else{
+//                         $('#actuators').append('<option value="' + index + '">' + controlOptVal + '</option>');
+//                         }
+//                     //console.log(`${key}: ${data[key]}`);
+//                     });
+//                     // END OF CODE TO ALTER
+//                     //console.log(data.key);         
+//                 }  
+//             }  
+//         );
+//     }
+    
+//    getFbValues(elemsSystems[0]);
+//    getFbValues(elemsSystems[1]);
+       
     function rulesControl(id,pathFile){
         let formRules = document.getElementById(id);
         let formData = {};
@@ -379,15 +547,19 @@ var app = (function() {
             let input = formRules.elements[i];
             
             console.log(input.name);
-            if (input.value !== "" ){
-                formData[input.name] = input.value;
+            if (input.value == "" || input.value == "selected" ){
+                alert("All fields must be filled out.");
+                return false;
+            }
+            else{
+                formData[input.name] = input.value
             }
             
             // formData.append(input.name,input.value);
             console.log(input.value);
             console.log(formData);
             //alert(formData);
-            }
+        }
         //rulesControl('sheepfoldform','/rulesSheeps');
         //console.log(formData);
         // Get data from Firebase RTDB, then get data inputted by form and "update" (set) the values given
