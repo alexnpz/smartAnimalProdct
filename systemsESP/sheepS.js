@@ -1,4 +1,4 @@
-import { getDatabase, ref, onValue, update,off,remove,push} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { getDatabase, ref, onValue, update,off,remove,set} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 var app = (function() {
     const db = getDatabase();
@@ -11,11 +11,15 @@ var app = (function() {
     // const alertPath = ref(db,"ESPSheep/alerts");
     // update(alertPath,objAlert);
 
+    
+
+
     let areaSheepId = document.getElementById("areaSheepId");
     let alertSheepId = document.getElementById("alertSheepId");
     let selZoneEdit = document.getElementById("optElem");
-    let rulesSheepId = document.getElementById("rulesSheepId");
-    //console.log(divClass);
+    let selRules = document.getElementsByName("optRules");
+    let divClass = document.getElementsByClassName("row formRules");
+    console.log(divClass);
     const spaSendFb = {
         'lux': [0,1],
         'door_servo': 1, //Door ChickenCoop
@@ -44,20 +48,30 @@ var app = (function() {
         'lux' : 'Light',
         'buzzer' : 'Buzzer', 
     };
-    // Component Reaload Function 
-    // function reloadComponent(id) {
-    //     var xhr = new XMLHttpRequest();
-    //     xhr.open('GET', 'chickencoop.html', true);
-    //     xhr.onreadystatechange = function() {
-    //         if (xhr.readyState === 4 && xhr.status === 200) {
-    //             // update the component container with the new content
-    //             document.getElementById(id).innerHTML = xhr.responseText;
-    //         }
-    //     };
-    //     xhr.send();
-    // }
 
+
+    //Use loop in a NodeList Element
+    for (let selRulesPos = 0; selRulesPos < selRules.length ; selRulesPos ++){
+        console.log(selRules[selRulesPos]);
+        selRules[selRulesPos].addEventListener("change",() => {
+            let selRulesOpt = selRules[selRulesPos].value;
+            switch(selRulesOpt){
+                case "keep":
+                    //Delete input type ="number" inside form
+                    break;
+                case "adjust":
+                    //Adjust values & prepare to "append" to Alert section
+                    //alert("yes!");
+                    rulesZone(selRulesPos,divClass);
+                    
+                    // Check alert
+                    break;
+            }
+        });
+    }
+    
     // Add & Remove Elements zone using Selected Options & calling respective function
+    
     selZoneEdit.addEventListener("change",() =>{
         let selVal = selZoneEdit.value;
         switch(selVal){
@@ -79,7 +93,86 @@ var app = (function() {
                 // Also submit, delete HTML elements related with those marked 
         }
     });
+    //let see = selRules.entries(1);
+    //console.log(see);
+    
+    // Function about Rules
+    function rulesZone(selRulesPos,divClass){
+        onValue(path,(snapshot) => {
+            if(snapshot.exists()){
+                document.getElementBy
+                const data = snapshot.val();
+                const keySensors = Object.keys(data.sensors);
+                const keysAlerts = Object.keys(data.alerts);
+                const alertsDB = Object.entries(data.alerts);
 
+                
+                console.log(alertsDB);
+                //Create div.row
+                //Create div.col with class float-right
+                //Create 1 or 2 input value="number" according to alerts topic on Firebase
+                const divRow = document.createElement("div");
+                divRow.setAttribute("class","d-flex mt-1");
+                divRow.setAttribute("class","row formInputs")
+                const divColLeft = document.createElement("div");
+                const divColRight = document.createElement("div");
+                divColLeft.setAttribute("class","col");
+                divColRight.setAttribute("class","col");
+                divRow.appendChild(divColLeft);
+                divRow.appendChild(divColRight);
+                let parentDiv = divClass[selRulesPos].parentNode;
+                console.log(parentDiv);
+                parentDiv.insertBefore(divRow,divClass[selRulesPos + 1]);
+                
+                //Filter keyAlerts that includes keySensors
+                const filteredAlerts = Object.keys(data.alerts)
+                    .filter(key => keySensors.includes(key))
+                    .reduce((obj, key) => {
+                        obj[key] = data.alerts[key];
+                        return obj;
+                    }, {});
+                
+                
+                
+                
+                console.log(filteredAlerts);
+                console.log(filteredAlerts.hum_sensor.alertOption);
+                // filteredAlerts.forEach(key => {
+
+                // })
+                //With filtered keys, verify if every element in the data.alerts.sensAlerts[i] has alertOption ==="range",
+                // then create 2 inputs, else 1 input
+
+                
+                // if(alertsDB[i].alertOption==="range"){
+                //     const inputValue = document.createElement("input");
+                //     inputValue.setAttribute("type","number");
+                //     //inputValue.setAttribute("placeholder","Previous Value: " + minPreviousVal);
+                //     divCenRight.appendChild(inputValue);
+                //     const inputValue = document.createElement("input");
+                //     inputValue.setAttribute("type","number");
+                //     //inputValue.setAttribute("placeholder","Previous Value: " + minPreviousVal);
+                //     divColRight.appendChild(inputValue);
+                // }
+
+                
+                //const rangeVal = alertsDB.filter(range =>  );
+                
+
+                const inputValue = document.createElement("input");
+                inputValue.setAttribute("type","number");
+                //inputValue.setAttribute("placeholder","Previous Value: " + previousVal);
+                divColRight.appendChild(inputValue);
+
+               
+                
+                //Check input type = "number" if all were filled and update alerts subtopic
+                
+            }
+        });
+
+    }
+    // Function just to execute different operations repetitive
     function zonEditSection (){
         const divZoneElem = document.getElementById("zoneElem");
         // Create form
@@ -117,6 +210,94 @@ var app = (function() {
         labActs.appendChild(labActsText);
     }
     
+    // Function Removal Elements
+    function zoneRemoval(){
+        onValue(path,(snapshot)=>{
+            if (snapshot.exists()){
+                document.getElementById("zoneElem").innerHTML = "";
+                const data = snapshot.val();
+                const keysSensors = Object.keys(data.sensors);
+                const keysActuators = Object.keys(data.actuators);
+                
+                zonEditSection();
+                
+                // Create multiple checkbox for Sensors
+                keysSensors.forEach((key) => {     
+                    const checkboxContainer = document.createElement("label");
+                    const checkbox = document.createElement("input");
+                    checkbox.setAttribute("type","checkbox");
+                    checkboxContainer.appendChild(checkbox);
+                    const checkboxText = document.createTextNode(key);
+                    checkboxContainer.appendChild(checkboxText);
+                    divColSens.appendChild(checkboxContainer);
+                });
+                // Create multiple checkbox for Sensors
+                keysActuators.forEach((key) => {
+                    const checkboxContainer = document.createElement("label");
+                    const checkbox = document.createElement("input");
+                    checkbox.setAttribute("type","checkbox");
+                    checkboxContainer.appendChild(checkbox);
+                    const checkboxText = document.createTextNode(key);
+                    checkboxContainer.appendChild(checkboxText);
+                    divColActs.appendChild(checkboxContainer);
+                });
+                // Create submit button of form
+                const btnZoneEdit = document.createElement("input");
+                btnZoneEdit.setAttribute("id","zoneFormBtn");
+                btnZoneEdit.setAttribute("type","button");
+                btnZoneEdit.setAttribute("value","Submit");
+                zoneEditForm.appendChild(btnZoneEdit);
+                
+                // Detect checkboxes selected by creating a listener in all input type = "checkbox" 
+                // and an event to detect if changed, then set the attribute to checked
+                let btZnEdit = document.getElementById("zoneFormBtn");
+                const checkboxes = document.querySelectorAll("input[type='checkbox']");
+                for (let i = 0; i < checkboxes.length; i++) {
+                    checkboxes[i].addEventListener("change", function(event) {
+                        if (this.checked) {
+                            this.setAttribute("checked", true);
+                        } else {
+                            this.removeAttribute("checked");
+                        }
+                    });
+                }
+                // Event listener on click of form submission of all those checkedCheckboxes, send "0" to Topic to stop sensoring/actuating
+                // and remove from visual _> remove from db by path
+                btZnEdit.addEventListener("click",() =>{
+                    const pathSPA = ref(db,"/spaFirebase");
+                    const checkedCheckboxes = document.querySelectorAll("input[type='checkbox'][checked]");
+                    let newSpaFirebase = {};
+                    
+                    for (let i = 0; i < checkedCheckboxes.length; i++) {
+                        let parent = checkedCheckboxes[i].parentNode;
+                        let keyText = parent.textContent;
+                        newSpaFirebase[keyText] = "0";
+                        
+                        // remove element
+                        if(data.sensors.hasOwnProperty(keyText)){
+                            let pathSens = ref(db,"ESPSheep/sensors/" + keyText);
+                            remove(pathSens);
+                        }
+                        else if(data.actuators.hasOwnProperty(keyText)){
+                            let pathActs = ref(db,"ESPSheep/actuators/" + keyText);
+                            remove(pathActs);
+                        }
+                    }
+                    
+                    update(pathSPA,newSpaFirebase)
+                    
+                    off(pathSPA);
+                    //reloadComponent("zoneElem");
+                    alert("Successful removal");
+                    document.getElementById("zoneElem").innerHTML = "";
+
+
+                    });
+                }  
+            }
+
+        );
+    }
     // function selectAlerts(selectClass,divOptions){
     //     strVal();
     //     selectClass.addEventListener("change", () => {
@@ -180,7 +361,6 @@ var app = (function() {
     //         }
     //     });
     // }
-    
     
     function zoneAdd(){
         zonEditSection();
@@ -388,226 +568,21 @@ var app = (function() {
         });
 
     }
-    // Function Removal Elements
-    function zoneRemoval(){
-        onValue(path,(snapshot)=>{
-            if (snapshot.exists()){
-                document.getElementById("zoneElem").innerHTML = "";
-                const data = snapshot.val();
-                const keysSensors = Object.keys(data.sensors);
-                const keysActuators = Object.keys(data.actuators);
-                
-                zonEditSection();
-                
-                // Create multiple checkbox for Sensors
-                keysSensors.forEach((key) => {     
-                    const checkboxContainer = document.createElement("label");
-                    const checkbox = document.createElement("input");
-                    checkbox.setAttribute("type","checkbox");
-                    checkboxContainer.appendChild(checkbox);
-                    const checkboxText = document.createTextNode(key);
-                    checkboxContainer.appendChild(checkboxText);
-                    divColSens.appendChild(checkboxContainer);
-                });
-                // Create multiple checkbox for Sensors
-                keysActuators.forEach((key) => {
-                    const checkboxContainer = document.createElement("label");
-                    const checkbox = document.createElement("input");
-                    checkbox.setAttribute("type","checkbox");
-                    checkboxContainer.appendChild(checkbox);
-                    const checkboxText = document.createTextNode(key);
-                    checkboxContainer.appendChild(checkboxText);
-                    divColActs.appendChild(checkboxContainer);
-                });
-                // Create submit button of form
-                const btnZoneEdit = document.createElement("input");
-                btnZoneEdit.setAttribute("id","zoneFormBtn");
-                btnZoneEdit.setAttribute("type","button");
-                btnZoneEdit.setAttribute("value","Submit");
-                zoneEditForm.appendChild(btnZoneEdit);
-                
-                // Detect checkboxes selected by creating a listener in all input type = "checkbox" 
-                // and an event to detect if changed, then set the attribute to checked
-                let btZnEdit = document.getElementById("zoneFormBtn");
-                const checkboxes = document.querySelectorAll("input[type='checkbox']");
-                for (let i = 0; i < checkboxes.length; i++) {
-                    checkboxes[i].addEventListener("change", function(event) {
-                        if (this.checked) {
-                            this.setAttribute("checked", true);
-                        } else {
-                            this.removeAttribute("checked");
-                        }
-                    });
-                }
-                // Event listener on click of form submission of all those checkedCheckboxes, send "0" to Topic to stop sensoring/actuating
-                // and remove from visual _> remove from db by path
-                btZnEdit.addEventListener("click",() =>{
-                    const pathSPA = ref(db,"/spaFirebase");
-                    const checkedCheckboxes = document.querySelectorAll("input[type='checkbox'][checked]");
-                    let newSpaFirebase = {};
-                    
-                    for (let i = 0; i < checkedCheckboxes.length; i++) {
-                        let parent = checkedCheckboxes[i].parentNode;
-                        let keyText = parent.textContent;
-                        newSpaFirebase[keyText] = "0";
-                        
-                        // remove element
-                        if(data.sensors.hasOwnProperty(keyText)){
-                            let pathSens = ref(db,"ESPSheep/sensors/" + keyText);
-                            remove(pathSens);
-                        }
-                        else if(data.actuators.hasOwnProperty(keyText)){
-                            let pathActs = ref(db,"ESPSheep/actuators/" + keyText);
-                            remove(pathActs);
-                        }
-                    }
-                    
-                    update(pathSPA,newSpaFirebase)
-                    
-                    off(pathSPA);
-                    //reloadComponent("zoneElem");
-                    alert("Successful removal");
-                    document.getElementById("zoneElem").innerHTML = "";
 
-
-                    });
-                }  
-            }
-
-        );
-    }
-    // Function about Rules
-    rulesZone();
-    function rulesZone(selRulesPos,divClass){
-        onValue(path,(snapshot) => {
-            if(snapshot.exists()){
-                const data = snapshot.val();
-                
-                const keysAlerts = Object.keys(data.alerts);
-                
-                const alertsVals = Object.values(data.alerts);
-                const alertsDB = Object.entries(data.alerts);
-                console.log(alertsVals);
-                console.log(alertsVals[0].alertOption);
-                
-                const divRowLabels = document.createElement("div");
-                divRowLabels.setAttribute("class"," row d-flex mt-1");
-                const divColPar = document.createElement("div");
-                divColPar.setAttribute("class","col");
-                const divColAct = document.createElement("div");
-                divColAct.setAttribute("class","col hstack gap-2 ms-auto");
-                const colParText = document.createTextNode("Parameter");
-                const colParAction = document.createTextNode("Action");
-                const divColParAction = document.createElement("div");
-                divColParAction.setAttribute("class","mx-auto");
-                rulesSheepId.appendChild(divRowLabels);
-                divRowLabels.appendChild(divColPar);
-                divRowLabels.appendChild(divColAct);
-                divColPar.append(colParText);
-                divColAct.appendChild(divColParAction);
-                divColParAction.appendChild(colParAction);
-
-                for(let i = 0; i < alertsVals.length; i++){
-                    const divRowRules = document.createElement("div");
-                    divRowRules.setAttribute("class"," row formRules");
-                    const leftMostDiv = document.createElement("div");
-                    leftMostDiv.setAttribute("class","col")
-                    const leftStrCnt = document.createElement("strong");
-                    //console.log(keysAlerts[i]);
-                    
-                    leftStrCnt.append(keysAlerts[i]);
-                    leftMostDiv.append(leftStrCnt);
-                    divRowRules.appendChild(leftMostDiv);
-                    rulesSheepId.appendChild(divRowRules);
-                    
-                    const rightMostDiv = document.createElement("div");
-                    rightMostDiv.setAttribute("class","col hstack gap-2 ms-auto");
-                    divRowRules.appendChild(rightMostDiv);
-                    
-                    if(alertsVals[i].alertOption === "range"){
-                        console.log("here");
-                        const minVal = document.createElement("input");
-                        minVal.setAttribute("type","number");
-                        minVal.setAttribute("name",keysAlerts[i]+":" + "alertMinValue");
-                        minVal.setAttribute("placeholder","Current Min Value: " + alertsVals[i].alertMinValue);
-
-                        const maxVal = document.createElement("input");
-                        maxVal.setAttribute("type","number");
-                        maxVal.setAttribute("name",keysAlerts[i]+":" +"alertMaxValue");
-                        maxVal.setAttribute("placeholder","Current Max Value: " + alertsVals[i].alertMaxValue);
-
-                        const divColMin = document.createElement("div")
-                        divColMin.setAttribute("class","col")
-                        const divColMax = document.createElement("div")
-                        divColMax.setAttribute("class","col hstack gap-2 ms-auto");
-
-                        rightMostDiv.appendChild(divColMin);
-                        rightMostDiv.appendChild(divColMax);
-                        divColMin.appendChild(minVal);
-                        divColMax.appendChild(maxVal);
-                    }
-                    else{
-                        const valLimit= document.createElement("input");
-                        valLimit.setAttribute("type","number");
-                        valLimit.setAttribute("name",keysAlerts+":" +"alertValue");
-                        valLimit.setAttribute("placeholder","Current Value: " + alertsVals[i].alertValue);
-                        rightMostDiv.appendChild(valLimit);
-                    }
-
-                    
-                }
-                const divSubm = document.createElement("div");
-                divSubm.setAttribute("class","d-flex");
-                rulesSheepId.appendChild(divSubm);
-                let submBtn = document.createElement("button");
-                submBtn.setAttribute("id","btnSaveRules");
-                submBtn.setAttribute("class","btn btn-primary ml-auto float-right");
-                submBtn.setAttribute("type","submit");
-                let textSubBtn = document.createTextNode("Submit");
-                divSubm.appendChild(submBtn);
-                submBtn.append(textSubBtn); 
-                const btnSaveRules = document.getElementById("btnSaveRules")
-                btnSaveRules.addEventListener("click", ()=>{
-
-                    // Form operations to get updated Object to send
-                    const inputSel = document.getElementsByTagName("input");
-
-                    const inputsByName = Array.from(inputSel)
-                    .filter(input => input.value !== "")
-                    .reduce((acc, input) => {
-                        const [sensorType, alertType] = input.name.split(":");
-                        if (!acc[sensorType]) {
-                        acc[sensorType] = {};
-                        }
-                        acc[sensorType][alertType] = input.value;
-                        return acc;
-                    }, {});
-
-                    
-                    let finalObject = {
-                        alerts: Object.fromEntries(
-                            Object.entries(inputsByName).map(([sensorType, alerts]) => [sensorType, alerts])
-                        )
-                    };
-
-                    for (let i = 0; i < alertsDB.length; i++) {
-                    const sensorType = alertsDB[i][0];
-                    const alertOption = alertsDB[i][1].alertOption;
-                    finalObject.alerts[sensorType].alertOption = alertOption;
-                }
-
-                    console.log(finalObject.alerts.alertOption);
-
-                    update(path, finalObject);
-                    off(path);
-                    alert("Successful sent info");
-                })       
-            }
-        });
-
-    }
-
-    // Visualize Area and Alerts getting data from Firebase RTDB, then populating into HTML file
+    // Component Reaload Function 
+    // function reloadComponent(id) {
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open('GET', 'chickencoop.html', true);
+    //     xhr.onreadystatechange = function() {
+    //         if (xhr.readyState === 4 && xhr.status === 200) {
+    //             // update the component container with the new content
+    //             document.getElementById(id).innerHTML = xhr.responseText;
+    //         }
+    //     };
+    //     xhr.send();
+    // }
+   
+ 
     function visualizeArea(){
         onValue(path,(snapshot) =>{
             if(snapshot.exists()){
@@ -663,4 +638,37 @@ var app = (function() {
    }
    visualizeArea();
        
+   function rulesControl(id,pathFile){
+    let formRules = document.getElementById(id);
+    let formData = {};
+
+    // Put in the placeholder the values about the rules -> Get from Firebase, which were sent
+    for (let i = 0; i < formRules.elements.length - 1; i++) {
+        let input = formRules.elements[i];
+        
+        console.log(input.name);
+        if (input.value == "" || input.value == "selected" ){
+            alert("All fields must be filled out.");
+            return false;
+        }
+        else{
+            formData[input.name] = input.value
+        }
+        
+        // formData.append(input.name,input.value);
+        console.log(input.value);
+        console.log(formData);
+        //alert(formData);
+    }
+    
+    //rulesControl('sheepfoldform','/rulesSheeps');
+    //console.log(formData);
+    
+    const path = ref(db,pathFile);
+    const postFirebase = update(path, formData);
+    
+}
+
+    document.getElementById("btnSaveRulesSheep").addEventListener("click", () => rulesControl("sheepfoldform","/rulesSheeps"));
+    
 })();

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap CSS -->
     <link href="style.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <title>IoT Dashboard</title>
 </head>
@@ -22,10 +22,10 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="sheepfold.html">SheepFold</a>
+                    <a class="nav-link active" aria-current="page" href="sheepfold.html">SheepFold</a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link active" href="chickencoop.html">Chicken Coop</a>
+                    <a class="nav-link " href="chickencoop.html">Chicken Coop</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="zones.html">Zones</a>
@@ -50,16 +50,15 @@
                         <div class="card-body">
                             <h5 class="card-title text-center">Area</h5>
                             <!--Sensors-->
-                            <div id="areaChickenId">   
+                            <div id="areaSheepId">   
                             </div>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title text-center">Alerts</h5>
-                            <div></div>
                             <!--Actuators-->
-                            <div id="alertChickenId"></div>
+                            <div id="alertSheepId"></div>
                         </div>
                     </div>
                 </div>
@@ -67,9 +66,57 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title text-center">Rules</h5>
-                            <form id="chickencoopform" class="formRules">
-                                    <div id="rulesChickenId"> 
+                            <!--Add Rules-->
+                            <form id="sheepfoldform">
+                                <div class="row d-flex">
+                                    <div class="col">Parameter</div>
+                                    <div class="col">Action to perform</div>
+                                </div>
+                                <div class="row formRules">
+                                    <div class="col">
+                                        <label>Temperature</label>
                                     </div>
+                                    <div class="col">
+                                        <select class="mx-auto" name="optRules">
+                                            <option class="text-center" value="keep" selected>Keep Action</option>
+                                            <option class="text-center" value="adjust">Adjust & Alert</option>
+                                        </select>
+                                    </div>                                    
+                                </div> 
+                                <div class="row formRules">
+                                    <div class="col">
+                                        <label >Humidity</label>
+                                    </div>
+                                    <div class="col">
+                                        <select class="mx-auto" name="optRules">
+                                            <option class="text-center" value="keep" selected>Keep Action</option>
+                                            <option class="text-center" value="adjust">Adjust & Alert</option>
+                                        </select>
+                                    </div>                
+                                </div>
+                                <div class="row formRules">
+                                    <div class="col">
+                                        <label>Water Quality</label>
+                                    </div>
+                                    <div class="col">
+                                        <select class="mx-auto" name="optRules" >
+                                            <option class="text-center" value="keep" selected>Keep Action</option>
+                                            <option class="text-center" value="adjust">Adjust & Alert</option>
+                                        </select>
+                                    </div>           
+                                </div>
+                                <div class="row formRules">
+                                    <div class="col">
+                                        <label >Door Open</label>
+                                    </div>
+                                    <div class="col">
+                                        <select class="mx-auto" name="optRules" >
+                                            <option class="text-center" value="keep" selected>Keep Action</option>
+                                            <option class="text-center" value="adjust">Adjust & Alert</option>
+                                        </select>
+                                    </div>             
+                                </div>
+                                <input id="btnSaveRulesSheep" type="submit" value="Submit">
                             </form>                  
                         </div>
                     </div>
@@ -92,9 +139,10 @@
             </div>
         </div>
     </section>
+    
     <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="chicken.js"></script>
+    <script type="module" src="sheep.js"></script>
 </body>
 
 </html>
