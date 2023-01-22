@@ -67,48 +67,54 @@
                         <div class="card-body">
                             <h5 class="card-title text-center">Rules</h5>
                             <!--Add Rules-->
-                            <form id="sheepfoldform" class="formRules">
-                                <div class="row">
+                            <form id="sheepfoldform">
+                                <div class="row d-flex">
+                                    <div class="col">Parameter</div>
+                                    <div class="col">Action to perform</div>
+                                </div>
+                                <div class="row formRules">
                                     <div class="col">
                                         <label>Temperature</label>
                                     </div>
                                     <div class="col">
-                                        <input id="rtemperaturemin" class="form-control" type="text" placeholder="Set minimum value" name="rtemperaturemin">
-                                    </div>
-                                    <div class="col">
-                                        <input id="rtemperaturemax" class="form-control" type="text" placeholder="Set maximum value" name="rtemperaturemin">
-                                    </div>
-                                    
-                                </div>
-                                <div class="d-flex mt-1">
-                                    
-                                </div>
-                                <div class="row">
+                                        <select class="mx-auto" name="optRules">
+                                            <option class="text-center" value="keep" selected>Keep Action</option>
+                                            <option class="text-center" value="adjust">Adjust & Alert</option>
+                                        </select>
+                                    </div>                                    
+                                </div> 
+                                <div class="row formRules">
                                     <div class="col">
                                         <label >Humidity</label>
                                     </div>
                                     <div class="col">
-                                        <input id="rthumiditymin" class="form-control" type="text" placeholder="Set minimum value (%)" name="rthumiditymin">
-                                    </div>
-                                    <div class="col">
-                                        <input id="rthumiditymax" class="form-control" type="text" placeholder="Set maximum value(%)" name="rthumiditymax">
-                                    </div>                    
+                                        <select class="mx-auto" name="optRules">
+                                            <option class="text-center" value="keep" selected>Keep Action</option>
+                                            <option class="text-center" value="adjust">Adjust & Alert</option>
+                                        </select>
+                                    </div>                
                                 </div>
-                                <div class="row">
+                                <div class="row formRules">
                                     <div class="col">
-                                        <label for="rwquality">Water Quality</label>
+                                        <label>Water Quality</label>
                                     </div>
                                     <div class="col">
-                                        <input id="rwquality" class="form-control" type="text" placeholder="Set value" name="rwquality">
-                                    </div>            
+                                        <select class="mx-auto" name="optRules" >
+                                            <option class="text-center" value="keep" selected>Keep Action</option>
+                                            <option class="text-center" value="adjust">Adjust & Alert</option>
+                                        </select>
+                                    </div>           
                                 </div>
-                                <div class="row">
+                                <div class="row formRules">
                                     <div class="col">
-                                        <label for="rdoor">Door Open</label>
+                                        <label >Door Open</label>
                                     </div>
                                     <div class="col">
-                                        <input id="rdoor" class="form-control" type="text" placeholder="Set value" name="rdoor">
-                                    </div>                  
+                                        <select class="mx-auto" name="optRules" >
+                                            <option class="text-center" value="keep" selected>Keep Action</option>
+                                            <option class="text-center" value="adjust">Adjust & Alert</option>
+                                        </select>
+                                    </div>             
                                 </div>
                                 <input id="btnSaveRulesSheep" type="submit" value="Submit">
                             </form>                  

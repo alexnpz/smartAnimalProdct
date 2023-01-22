@@ -1,8 +1,11 @@
-import { getDatabase, ref,set, onValue, update,off,remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { getDatabase, ref, onValue, update,off,remove} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
 var app = (function() {
     const db = getDatabase();
     const path = ref(db,"ESPChicken");
+    let areaChickenId = document.getElementById("areaChickenId");
+    let alertChickenId = document.getElementById("alertChickenId");
+    let selZoneEdit = document.getElementById("optElem");
     const spaSendFb = {
         'lux': [0,1],
         'door_servo': 1, //Door ChickenCoop
@@ -20,8 +23,19 @@ var app = (function() {
         'door_servo_third': 1, // Door SheepFold
         'fan': [0,1]                
     };
+    const controlOptions = {
+        'servoDoorNight' : 'Front Door',
+        'minerals' : 'Minerals Motor',
+        'fan' : 'Fan',
+        'temperature': 'Temperature',
+        'humidity': 'Humidity',
+        'waterQ': 'Water Quality',
+        'motorFood' : 'Food Motor',
+        'lux' : 'Light',
+        'buzzer' : 'Buzzer', 
+    };
 
-    let selZoneEdit = document.getElementById("optElem");
+    // Add & Remove Elements zone using Selected Options & calling respective function
     selZoneEdit.addEventListener("change",() =>{
         let selVal = selZoneEdit.value;
         switch(selVal){
@@ -36,14 +50,15 @@ var app = (function() {
                 break;
             case "remove":
                 document.getElementById("zoneElem").innerHTML = "";
-                zoneEdit();
+                zoneRemoval();
                 break;
                 // Show all sensors & actuators taken from database, with a checkbox and create submit button
                 // After submit, verify checkbox marked, those marked send 0 to SPAFirebase to disconnect element
-                // Also submit, delete HTML elements related with those marked 
+                // Also submit, delete HTML elements related with those marked by removing them from topic
         }
     });
 
+    // Function just to execute different operations repetitive
     function zonEditSection (){
         const divZoneElem = document.getElementById("zoneElem");
         // Create form
@@ -81,7 +96,8 @@ var app = (function() {
         labActs.appendChild(labActsText);
     }
     
-    function zoneEdit(){
+    // Function Removal Elements
+    function zoneRemoval(){
         onValue(path,(snapshot)=>{
             if (snapshot.exists()){
                 document.getElementById("zoneElem").innerHTML = "";
@@ -91,8 +107,6 @@ var app = (function() {
                 
                 zonEditSection();
                 
-                
-                //console.log(data);
                 // Create multiple checkbox for Sensors
                 keysSensors.forEach((key) => {     
                     const checkboxContainer = document.createElement("label");
@@ -102,8 +116,6 @@ var app = (function() {
                     const checkboxText = document.createTextNode(key);
                     checkboxContainer.appendChild(checkboxText);
                     divColSens.appendChild(checkboxContainer);
-
-                    //console.log(`${key}: ${data[key]}`);
                 });
                 // Create multiple checkbox for Sensors
                 keysActuators.forEach((key) => {
@@ -121,7 +133,9 @@ var app = (function() {
                 btnZoneEdit.setAttribute("type","button");
                 btnZoneEdit.setAttribute("value","Submit");
                 zoneEditForm.appendChild(btnZoneEdit);
-                    //console.log(data.key);         
+                
+                // Detect checkboxes selected by creating a listener in all input type = "checkbox" 
+                // and an event to detect if changed, then set the attribute to checked
                 let btZnEdit = document.getElementById("zoneFormBtn");
                 const checkboxes = document.querySelectorAll("input[type='checkbox']");
                 for (let i = 0; i < checkboxes.length; i++) {
@@ -133,20 +147,35 @@ var app = (function() {
                         }
                     });
                 }
-                
+                // Event listener on click of form submission of all those checkedCheckboxes, send "0" to Topic to stop sensoring/actuating
+                // and remove from visual _> remove from db by path
                 btZnEdit.addEventListener("click",() =>{
                     const pathSPA = ref(db,"/spaFirebase");
                     const checkedCheckboxes = document.querySelectorAll("input[type='checkbox'][checked]");
                     let newSpaFirebase = {};
+                    
                     for (let i = 0; i < checkedCheckboxes.length; i++) {
                         let parent = checkedCheckboxes[i].parentNode;
                         let keyText = parent.textContent;
                         newSpaFirebase[keyText] = "0";
+                        
+                        // remove element
+                        if(data.sensors.hasOwnProperty(keyText)){
+                            let pathSens = ref(db,"ESPChicken/sensors/" + keyText);
+                            remove(pathSens);
                         }
+                        else if(data.actuators.hasOwnProperty(keyText)){
+                            let pathActs = ref(db,"ESPChicken/actuators/" + keyText);
+                            remove(pathActs);
+                        }
+                    }
                     //console.log(newSpaFirebase);
                     update(pathSPA,newSpaFirebase)
-                    // use remove to sensor, fi was then use remove
+                    
                     off(pathSPA);
+                    //reloadComponent("zoneElem");
+                    alert("Successful removal");
+                    document.getElementById("zoneElem").innerHTML = "";
                     });
                 }  
             }
@@ -427,21 +456,20 @@ var app = (function() {
 
     }
     
-    const controlOptions = {
-        'servoDoorNight' : 'Front Door',
-        'minerals' : 'Minerals Motor',
-        'fan' : 'Fan',
-        'temperature': 'Temperature',
-        'humidity': 'Humidity',
-        'waterQ': 'Water Quality',
-        'motorFood' : 'Food Motor',
-        'lux' : 'Light',
-        'buzzer' : 'Buzzer', 
-    };
-
+    // Component Reaload Function 
+    // function reloadComponent(id) {
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open('GET', 'chickencoop.html', true);
+    //     xhr.onreadystatechange = function() {
+    //         if (xhr.readyState === 4 && xhr.status === 200) {
+    //             // update the component container with the new content
+    //             document.getElementById(id).innerHTML = xhr.responseText;
+    //         }
+    //     };
+    //     xhr.send();
+    // }
     
-   let areaChickenId = document.getElementById("areaChickenId");
-   let alertChickenId = document.getElementById("alertChickenId");
+   // Visualize Area and Alerts getting data from Firebase RTDB, then populating into HTML file
    function visualizeArea(){
         onValue(path,(snapshot) =>{
             if(snapshot.exists()){
@@ -471,8 +499,8 @@ var app = (function() {
                     rightMostDiv.append(sensorsArrays[i][1]);
                     
                 }
-                // Alerts, here create SetInterval with CSS Properties in red for Alerts and SetTimeout for actuators
-                // Alerts, check alertOption and check vs value
+                // TODO:Alerts, here create SetInterval with CSS Properties in red for Alerts and SetTimeout for actuators
+                // TODO:Alerts, check alertOption and check vs value
                 // check if actuatorsArrays[i][1] =="OFF" ,then not visualize
                 for(let i = 0; i < actuatorsArrays.length; i++){
                     if(actuatorsArrays[i][1] === "ON"){
@@ -495,66 +523,14 @@ var app = (function() {
             }
         });
    }
-   visualizeArea();
-
-//    function getFbValues(systSelected){
-//         const path = ref(db,systSelected);
-//         onValue(path,(snapshot)=>{
-//             if (snapshot.exists()){
-//                 const data = snapshot.val();
-//                 const keys = Object.keys(data);
-//                 //console.log(data);
-//                 keys.forEach((key,index) => {
-//                     const id = '#'+ key;
-//                     let controlOptVal = controlOptions[key];
-//                     //console.log(controlOptVal);
-//                     //console.log(data[key]);
-                
-//                     if(key ==='temperature' && (data[key] > 30 || data[key] < 20)){
-//                         $('#temperaturemsg').text('YES');
-                        
-//                     } else if (key ==='temperature' && (data[key] < 30 || data[key] > 20) ){
-//                         $('#temperaturemsg').text('NO');
-//                     }
-//                     else if (key ==='humidity' && (data[key] > 85 || data[key] < 25) ){
-//                         $('#humiditymsg').text('YES');
-//                     }
-//                     else if (key ==='humidity' && (data[key] < 85 || data[key] > 25) ){
-//                         $('#humiditymsg').text('NO');
-//                     }
-//                     $(id).text(data[key]);
-//                     // CODE TO ALTER
-//                     if (systSelected.includes('sensors')){
-//                         $('#sensors').append('<option value="' + index + '">' + controlOptVal + '</option>');
-//                     } else{
-//                         $('#actuators').append('<option value="' + index + '">' + controlOptVal + '</option>');
-//                         }
-//                     //console.log(`${key}: ${data[key]}`);
-//                 });
-//                     // END OF CODE TO ALTER
-//                     //console.log(data.key);         
-//                 }  
-//             }  
-//         );
-//     }
+   visualizeArea();    
     
-//    getFbValues(elemsSystems[0]);
-//    getFbValues(elemsSystems[1]);
-        
-    
-    //Control Panel add&remove visualization with use of add/remove to Firebase
-    // Send add/remove to Firebase
-    // function sendFbValues (spaSendFb,dbDir) {
-    //     const path = ref(db,dbDir);
-    //     const postFirebase = set(path, spaSendFb);
-        
-    // }
-
-    //sendFbValues(spaSendFb,'/spaFirebase'); //-> rulesControl adapt
-    
+    // Rules Control Form & submit
     function rulesControl(id,pathFile){
         let formRules = document.getElementById(id);
         let formData = {};
+
+        // Put in the placeholder the values about the rules -> Get from Firebase, which were sent
         for (let i = 0; i < formRules.elements.length - 1; i++) {
             let input = formRules.elements[i];
             
@@ -577,12 +553,9 @@ var app = (function() {
         //console.log(formData);
         
         const path = ref(db,pathFile);
-        const postFirebase = set(path, formData);
+        const postFirebase = update(path, formData);
         
     }
-
     document.getElementById("btnSaveRulesChicken").addEventListener("click", () => rulesControl("chickencoopform","/rulesChicken"));    
-   
-
     
 })();
