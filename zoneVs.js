@@ -1,9 +1,9 @@
 import { getDatabase, ref, onValue, update,off,remove} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-import {doorAPI} from "./doorCont.js"
+// import {doorAPI} from "./doorCont.js"
 var app = (function() {
     const db = getDatabase();
     
-    const doorC = doorAPI();
+    // const doorC = doorAPI();
     
     function toggleHideShow(){
         let areaId = document.getElementById("areaId");

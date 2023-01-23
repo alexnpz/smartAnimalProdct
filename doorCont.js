@@ -1,10 +1,24 @@
-import { getDatabase, ref,off,update} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-
+import { getDatabase, ref,onValue} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 const db = getDatabase();
 let pathAPI = ref(db,"/Additional Info/API/");
+let cutTime = onValue(pathAPI,(snapshot)=>{
+    if(snapshot.exists()){
+        const dataSn = snapshot.val();
+        const dataAPI = dataSn.currentTime;
+        let objTime = {}
+        objTime["currenTime"] = dataAPI;
+        console.log(dataAPI);
+        return objTime;
+    }
+});
 export const doorAPI = async function (){
+    
+    
+    
+    
     // "https://api.ipgeolocation.io/ipgeo?apiKey=554653b913b04d24b5a7e80804f95a82"
     let response = await fetch('https://api.ipgeolocation.io/ipgeo?apiKey=554653b913b04d24b5a7e80804f95a82');
+    
     let data = await response.json();
     const latitude = data.latitude; 
     const longitude = data.longitude;
@@ -17,6 +31,7 @@ export const doorAPI = async function (){
     let dataSunsetObj = new Date (dataSunset);
     let dataSunriseUTC= dataSunriseObj.getTime();
     let dataSunsetUTC= dataSunsetObj.getTime();
+    
     switch (true) {
         case currentTime < dataSunriseUTC:
             // code for before sunrise
