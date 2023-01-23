@@ -18,7 +18,7 @@ export const doorAPI = async function (){
     let dataSunriseUTC= dataSunriseObj.getTime();
     let dataSunsetUTC= dataSunsetObj.getTime();
     switch (true) {
-        case  currentTime < dataSunriseUTC:
+        case currentTime < dataSunriseUTC:
             // code for before sunrise
             //"doorControl" : "OFF" false
             let doorBeforeSunrise = {};
@@ -31,27 +31,53 @@ export const doorAPI = async function (){
             // code for between sunrise and sunset
             //"doorControl" : "ON", then after 5 minutes set to "OFF"
             let doorAfterSunrise = {};
-            doorAfterSunrise["doorControl"] = "ON";
-            update(pathAPI,doorAfterSunrise)
-            setTimeout(() => {
-                doorAfterSunrise["doorControl"] = "OFF";
-                update(pathAPI,doorAfterSunrise);
-                off(pathAPI);
-            }, 60000);
-            console.log("Between sunrise and sunset");
+                if(weatherObj["contDoor"] === 1){
+                  console.log("Door was already open");
+                  weatherObj["contDoor"] = 0;
+                  doorAfterSunrise["doorControl"] = "OFF";
+                  update(pathAPI,doorAfterSunrise)
+                  setTimeout(() => {
+                    doorAfterSunrise["doorControl"] = "OFF";
+                    update(pathAPI,doorAfterSunrise);
+                    off(pathAPI);
+                  }, 60000);
+                } else {
+                  weatherObj["contDoor"] = 1;
+                  doorAfterSunrise["doorControl"] = "ON";
+                  update(pathAPI,doorAfterSunrise)
+                  setTimeout(() => {
+                    doorAfterSunrise["doorControl"] = "OFF";
+                    update(pathAPI,doorAfterSunrise);
+                    off(pathAPI);
+                  }, 60000);
+                }
             break;
         case currentTime >= dataSunsetUTC:
             // code for after sunset
             //"doorControl" : "ON", then after 5 minutes set to "OFF"
             console.log("After sunset");
             let doorAfterSunset = {};
-            doorAfterSunset["doorControl"] = "ON";
-            update(pathAPI,doorAfterSunset)
-            setTimeout(() => {
-                doorAfterSunset["doorControl"] = "OFF";
-                update(pathAPI,doorAfterSunset);
-                off(pathAPI);
-            }, 60000);
+                if(weatherObj["contDoor"] === 1){
+                  console.log("Door was already open");
+                  weatherObj["contDoor"] = 0;
+                  let doorAfterSunrise = {};
+                  doorAfterSunset["doorControl"] = "OFF";
+                  update(pathAPI,doorAfterSunset)
+                  setTimeout(() => {
+                    doorAfterSunset["doorControl"] = "OFF";
+                    update(pathAPI,doorAfterSunset);
+                    off(pathAPI);
+                  }, 60000);
+                } else {
+                  weatherObj["contDoor"] = 1;
+                  doorAfterSunset["doorControl"] = "ON";
+                  update(pathAPI,doorAfterSunset)
+                  setTimeout(() => {
+                    doorAfterSunset["doorControl"] = "OFF";
+                    update(pathAPI,doorAfterSunset);
+                    off(pathAPI);
+                  }, 60000);
+                }
             break;
         default:
             console.log("Invalid case");
