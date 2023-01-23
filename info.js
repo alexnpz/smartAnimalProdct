@@ -1,6 +1,7 @@
 import { getDatabase, ref,off,update,get} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-// Using jQuery to get IP, Geolocation and then request OpenWeatherMap and get some useful data
+// Using jQuery to get IP, General Geolocation and then request OpenWeatherMap and get some useful data
+//https://ipgeolocation.io/documentation.html
 const db = getDatabase();
 let pathAPI = ref(db,"/Additional Info/API/");
 let path = ref(db,"/Additional Info/activity/");

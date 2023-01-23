@@ -3,6 +3,8 @@ import { getDatabase, ref, onValue, update,off,remove,push} from "https://www.gs
 var app = (function() {
     const db = getDatabase();
     const path = ref(db,"ESPSheep");
+    let doorC = require('./doorCont');
+    doorC.doorAPI();
     // const objAlert ={
     //     "door":{"alertOption" : "range",
     //     "alertMinValue":"10",

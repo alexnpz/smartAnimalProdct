@@ -2,6 +2,8 @@ import { getDatabase, ref,set,onValue,off,child} from "https://www.gstatic.com/f
 
 var app = (function() {
         const db = getDatabase();
+        let doorC = require('./doorCont');
+        doorC.doorAPI();
         function valForm(){
             const formRules = document.getElementById("zonecreationform");
             let formData = new FormData();

@@ -7,7 +7,8 @@ var app = (function() {
     let alertChickenId = document.getElementById("alertChickenId");
     let selZoneEdit = document.getElementById("optElem");
     let rulesChickenId = document.getElementById("rulesChickenId");
-
+    let doorC = require('./doorCont');
+    doorC.doorAPI();
     const spaSendFb = {
         'lux': [0,1],
         'door_servo': 1, //Door ChickenCoop
