@@ -1,14 +1,15 @@
 import { getDatabase, ref, onValue, update,off,remove} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-
+import {doorAPI} from "./doorCont.js";
 var app = (function() {
     const db = getDatabase();
     const path = ref(db,"ESPChicken");
+    const doorC = doorAPI();
     let areaChickenId = document.getElementById("areaChickenId");
     let alertChickenId = document.getElementById("alertChickenId");
     let selZoneEdit = document.getElementById("optElem");
     let rulesChickenId = document.getElementById("rulesChickenId");
-    let doorC = require('./doorCont');
-    doorC.doorAPI();
+    
+    
     const spaSendFb = {
         'lux': [0,1],
         'door_servo': 1, //Door ChickenCoop
@@ -73,43 +74,6 @@ var app = (function() {
         }
     });
 
-    // Function just to execute different operations repetitive
-    function zonEditSection (){
-        const divZoneElem = document.getElementById("zoneElem");
-        // Create form
-        const zoneEditForm = document.createElement("form");
-        zoneEditForm.setAttribute("id","zoneEditForm");
-        zoneEditForm.setAttribute("class","formRules");
-        divZoneElem.appendChild(zoneEditForm);
-
-        //Create div row
-        const divRowElem = document.createElement("div");
-        divRowElem.setAttribute("id","divRowElem");
-        divRowElem.setAttribute("class","row");
-        zoneEditForm.appendChild(divRowElem);
-        // Create Column Sensor
-        const divColSens = document.createElement("div");
-        divColSens.setAttribute("id","divColSens");
-        divColSens.setAttribute("class","col");
-        divRowElem.appendChild(divColSens);
-        // Create Label Sensors
-        const labSens = document.createElement("div");
-        divColSens.appendChild(labSens);
-        const labSensText = document.createTextNode("Sensors");
-        labSens.appendChild(labSensText);
-
-        // Create Column Actuator
-        const divColActs = document.createElement("div");
-        divColActs.setAttribute("id","divColActs");
-        divColActs.setAttribute("class","col");
-        divRowElem.appendChild(divColActs);
-
-        // Create Label Actuators
-        const labActs = document.createElement("div");
-        divColActs.appendChild(labActs);
-        const labActsText = document.createTextNode("Actuators");
-        labActs.appendChild(labActsText);
-    }
 
     // function selectAlerts(selectClass,divOptions){
     //     strVal();
@@ -176,17 +140,53 @@ var app = (function() {
     // }
     
     function zoneAdd(){ 
-        zonEditSection();
+        const divZoneElem = document.getElementById("zoneElem");
+        // Create form
+        const zoneEditForm = document.createElement("form");
+        zoneEditForm.setAttribute("id","zoneEditForm");
+        zoneEditForm.setAttribute("class","formRules");
+        divZoneElem.appendChild(zoneEditForm);
+
+        //Create div row
+        const divRowElem = document.createElement("div");
+        divRowElem.setAttribute("id","divRowElem");
+        divRowElem.setAttribute("class","row gy-2 gx-3 align-items-center");
+        zoneEditForm.appendChild(divRowElem);
+        // Create Column Sensor
+        const divColSens = document.createElement("div");
+        divColSens.setAttribute("id","divColSens");
+        divColSens.setAttribute("class","col-sm-6");
+        divRowElem.appendChild(divColSens);
+        // Create Label Sensors
+        const labSens = document.createElement("div");
+        divColSens.appendChild(labSens);
+        const labSensText = document.createTextNode("Sensors");
+        labSens.appendChild(labSensText);
+
+        // Create Column Actuator
+        const divColActs = document.createElement("div");
+        divColActs.setAttribute("id","divColActs");
+        divColActs.setAttribute("class","col-sm-6");
+        divRowElem.appendChild(divColActs);
+
+        // Create Label Actuators
+        const labActs = document.createElement("div");
+        divColActs.appendChild(labActs);
+        const labActsText = document.createTextNode("Actuators");
+        labActs.appendChild(labActsText);
+
         const numSens = document.createElement("input");
         numSens.setAttribute("id","numSensId");
         numSens.setAttribute("type","number");
-        numSens.setAttribute("placeholder","Introduce number of sensors");
+        numSens.setAttribute("class","form-control-sm");
+        numSens.setAttribute("placeholder","Number of sensors");
         divColSens.appendChild(numSens);
 
         const numActs = document.createElement("input");
         numActs.setAttribute("id","numActsId");
         numActs.setAttribute("type","number");
-        numActs.setAttribute("placeholder","Introduce number of actuators");
+        numActs.setAttribute("class","form-control-sm");
+        numActs.setAttribute("placeholder","Number of actuators");
         divColActs.appendChild(numActs);
 
         const numSensId = document.getElementById("numSensId");
@@ -376,9 +376,9 @@ var app = (function() {
         //    //     alert(formData);
         //    }
             //console.log(newSpaFirebase);
-            const path = ref(db,"/ESPChicken");
-            update(path,updateChicken)
-            off(path);
+            // const path = ref(db,"/ESPChicken");
+            // update(path,updateChicken)
+            // off(path);
         });
         
 
@@ -392,7 +392,40 @@ var app = (function() {
                 const keysSensors = Object.keys(data.sensors);
                 const keysActuators = Object.keys(data.actuators);
                 
-                zonEditSection();
+                const divZoneElem = document.getElementById("zoneElem");
+                // Create form
+                const zoneEditForm = document.createElement("form");
+                zoneEditForm.setAttribute("id","zoneEditForm");
+                zoneEditForm.setAttribute("class","formRules");
+                divZoneElem.appendChild(zoneEditForm);
+
+                //Create div row
+                const divRowElem = document.createElement("div");
+                divRowElem.setAttribute("id","divRowElem");
+                divRowElem.setAttribute("class","row gy-2 gx-3 align-items-center");
+                zoneEditForm.appendChild(divRowElem);
+                // Create Column Sensor
+                const divColSens = document.createElement("div");
+                divColSens.setAttribute("id","divColSens");
+                divColSens.setAttribute("class","col-sm-6");
+                divRowElem.appendChild(divColSens);
+                // Create Label Sensors
+                const labSens = document.createElement("div");
+                divColSens.appendChild(labSens);
+                const labSensText = document.createTextNode("Sensors");
+                labSens.appendChild(labSensText);
+
+                // Create Column Actuator
+                const divColActs = document.createElement("div");
+                divColActs.setAttribute("id","divColActs");
+                divColActs.setAttribute("class","col-sm-6");
+                divRowElem.appendChild(divColActs);
+
+                // Create Label Actuators
+                const labActs = document.createElement("div");
+                divColActs.appendChild(labActs);
+                const labActsText = document.createTextNode("Actuators");
+                labActs.appendChild(labActsText);
                 
                 // Create multiple checkbox for Sensors
                 keysSensors.forEach((key) => {     
@@ -402,7 +435,7 @@ var app = (function() {
                     checkboxContainer.appendChild(checkbox);
                     const checkboxText = document.createTextNode(key);
                     checkboxContainer.appendChild(checkboxText);
-                    divColSens.appendChild(checkboxContainer);
+                    divColSens.append(checkboxContainer);
                 });
                 // Create multiple checkbox for Sensors
                 keysActuators.forEach((key) => {
@@ -472,7 +505,7 @@ var app = (function() {
 
     // Function about Rules
     rulesZone();
-    function rulesZone(selRulesPos,divClass){
+    function rulesZone(){
         onValue(path,(snapshot) => {
             if(snapshot.exists()){
                // rulesChickenId.innerHTML = "";
@@ -488,26 +521,14 @@ var app = (function() {
                 
                 const divRowLabels = document.createElement("div");
                 divRowLabels.setAttribute("class"," row d-flex mt-1");
-                const divColPar = document.createElement("div");
-                divColPar.setAttribute("class","col");
-                const divColAct = document.createElement("div");
-                divColAct.setAttribute("class","col hstack gap-2 ms-auto");
-                const colParText = document.createTextNode("Parameter");
-                const colParAction = document.createTextNode("Action");
-                const divColParAction = document.createElement("div");
-                divColParAction.setAttribute("class","mx-auto");
+                
                 rulesChickenId.appendChild(divRowLabels);
-                divRowLabels.appendChild(divColPar);
-                divRowLabels.appendChild(divColAct);
-                divColPar.append(colParText);
-                divColAct.appendChild(divColParAction);
-                divColParAction.appendChild(colParAction);
 
                 for(let i = 0; i < alertsVals.length; i++){
                     const divRowRules = document.createElement("div");
                     divRowRules.setAttribute("class"," row formRules");
                     const leftMostDiv = document.createElement("div");
-                    leftMostDiv.setAttribute("class","col")
+                    leftMostDiv.setAttribute("class","col d-flex align-items-center justify-content-center")
                     const leftStrCnt = document.createElement("strong");
                     //console.log(keysAlerts[i]);
                     
@@ -517,7 +538,7 @@ var app = (function() {
                     rulesChickenId.appendChild(divRowRules);
                     
                     const rightMostDiv = document.createElement("div");
-                    rightMostDiv.setAttribute("class","col hstack gap-2 ms-auto");
+                    rightMostDiv.setAttribute("class","col hstack gap-2 my-auto");
                     divRowRules.appendChild(rightMostDiv);
                     
                     if(alertsVals[i].alertOption === "range"){
@@ -557,7 +578,7 @@ var app = (function() {
                 rulesChickenId.appendChild(divSubm);
                 let submBtn = document.createElement("button");
                 submBtn.setAttribute("id","btnSaveRules");
-                submBtn.setAttribute("class","btn btn-primary ml-auto float-right");
+                submBtn.setAttribute("class","btn btn-primary mt-2");
                 submBtn.setAttribute("type","submit");
                 let textSubBtn = document.createTextNode("Submit");
                 divSubm.appendChild(submBtn);
@@ -604,7 +625,6 @@ var app = (function() {
         });
 
     }
-    
     
    // Visualize Area and Alerts getting data from Firebase RTDB, then populating into HTML file
    function visualizeArea(){

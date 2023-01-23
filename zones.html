@@ -44,19 +44,17 @@
 
     <section>
         <div class="container-fluid">
-            <div class="row justify-content-end">
-                <div class="col-md-4">
-                    <div class="card container-sm">
-                        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-xl-1">
+                        <div>
                             <select class="form-select form-select-sm" name="routing" id="routing" aria-label="Default select example">
-                                <option class="text-center" selected value="default">Pick an area</option>
+                                <option class="text-center" selected value="default">Pick</option>
                             </select>
                         </div>
-                    </div>
                 </div>
             </div>
             <div class="row ">
-                <div class="col-md-4">
+                <div class="col-xl-6">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title text-center">Area</h5> 
@@ -64,21 +62,38 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Rules</h5>
+                            <div id="rulesId"></div>     
+                        </div>
+                    </div>
+                </div>  
+            </div>
+            <div class="row">
+                <div class="col-xl-6">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title text-center">Alerts</h5>
-                            <div id="alertsId"></div>
+                            <form id="zonesform" class="formRules">
+                                <div id="alertsId"></div>
+                            </form>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-xl-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title text-center">Alerts Edition</h5>
-                            <div class="d-flex mt-1" id="rulesId"></div> 
-                            <form id="zoneEdition" onsubmit="valForm()">
-                            </form>               
+                            <h5 class="card-title text-center">Add & Remove Elements</h5>
+                            <div class="d-flex" >
+                                <select class="mx-auto" name="optElem" id="optElem">
+                                    <option value="selected">Pick an option</option>
+                                    <option value="add">Add</option>
+                                    <option value="remove">Remove</option>
+                                </select>
+                            </div>
+                            <div id="zoneElem" class="d-flex"></div>          
                         </div>
                     </div>
                 </div>

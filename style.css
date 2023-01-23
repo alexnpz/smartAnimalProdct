@@ -11,3 +11,7 @@ input[type=number] {
   -moz-appearance: textfield;
   appearance: none;
 }
+
+::placeholder {
+  color: #950F0F;
+}

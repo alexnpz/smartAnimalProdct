@@ -1,9 +1,9 @@
 import { getDatabase, ref,set,onValue,off,child} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-
+import {doorAPI} from "./doorCont.js"
 var app = (function() {
         const db = getDatabase();
         let doorC = require('./doorCont');
-        doorC.doorAPI();
+        const doorC = doorAPI();
         function valForm(){
             const formRules = document.getElementById("zonecreationform");
             let formData = new FormData();
