@@ -2,8 +2,7 @@ import { getDatabase, ref,set,onValue,off,child} from "https://www.gstatic.com/f
 import {doorAPI} from "./doorCont.js"
 var app = (function() {
         const db = getDatabase();
-        let doorC = require('./doorCont');
-        const doorC = doorAPI();
+        //const doorC = doorAPI();
         function valForm(){
             const formRules = document.getElementById("zonecreationform");
             let formData = new FormData();
@@ -41,7 +40,7 @@ var app = (function() {
                     sensorsData[key] = value;
                 }
                 else if(key.includes("alert")){
-                    alertsData[key] = value;
+                    alertsData[value] = value;
                 }
                 else if(key.includes("actuator")){
                     actuatorsData[key] = value;
@@ -168,7 +167,7 @@ var app = (function() {
                     newLabAlertValue.innerHTML = "Alert Value" + ":";
     
                     const newAlertValue = document.createElement("input");
-                    newAlertValue("class","alertValueAboveId");
+                    newAlertValue.setAttribute("class","alertValueAboveId");
                     alertArray.push(newAlertValue.className);
     
                     newAlertValue.type = "number";
@@ -228,14 +227,14 @@ var app = (function() {
                 newInputValue.className ="senVal";
                 newInputValue.name = "sensorNormalValue" + (i+1);
 
-                // Create measurement unit
-                const newMeas = document.createElement("label");
-                newMeas.innerHTML = "Measurement Unit" + ":";
+                // // Create measurement unit
+                // const newMeas = document.createElement("label");
+                // newMeas.innerHTML = "Measurement Unit" + ":";
 
-                const newMeasInput = document.createElement("input");
-                newMeasInput.type = "text";
-                newMeasInput.className ="senVal";
-                newMeasInput.name = "sensorMeasUnit" + (i+1);
+                // const newMeasInput = document.createElement("input");
+                // newMeasInput.type = "text";
+                // newMeasInput.className ="senVal";
+                // newMeasInput.name = "sensorMeasUnit" + (i+1);
 
                 // Select with options to define alert or normal range of behaviour
                 const newSelectLabel = document.createElement("label");
@@ -283,17 +282,21 @@ var app = (function() {
                 sensorsFields.appendChild(newInputName);
                 sensorsFields.appendChild(newLabInputValue);
                 sensorsFields.appendChild(newInputValue);
-                sensorsFields.appendChild(newMeas);
-                sensorsFields.appendChild(newMeasInput);
+                // sensorsFields.appendChild(newMeas);
+                // sensorsFields.appendChild(newMeasInput);
                 sensorsFields.appendChild(newSelectLabel);
                 sensorsFields.appendChild(newSelect);
                 sensorsFields.appendChild(divOptions);
-
             }
             // call function to detect changes in the select
             let selectClass = document.getElementsByClassName("alertOption");
             let divOptions = document.getElementsByClassName("divOptions");
-            selectAlerts(selectClass,divOptions);
+            for (let i = 0; i < selectClass.length; i++) {
+                for(let j = 0; j < divOptions.length; j++){
+                    selectAlerts(selectClass[j],divOptions[j]);
+                } 
+            }
+            
          });
 
          // Actuators creation

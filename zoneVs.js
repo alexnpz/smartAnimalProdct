@@ -1,37 +1,37 @@
 import { getDatabase, ref, onValue, update,off,remove} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-// import {doorAPI} from "./doorCont.js"
+import {doorAPI} from "./doorCont.js"
 var app = (function() {
     const db = getDatabase();
     
-    // const doorC = doorAPI();
+    const doorC = doorAPI();
     
-    function toggleHideShow(){
-        let areaId = document.getElementById("areaId");
-        let alertsId = document.getElementById("alertsId");
-        let rulesId = document.getElementById("rulesId");
+    // function toggleHideShow(){
+    //     let areaId = document.getElementById("areaId");
+    //     let alertsId = document.getElementById("alertsId");
+    //     let rulesId = document.getElementById("rulesId");
         
-        if (areaId.style.display === "none") {
-            areaId.style.display = "block";
-        } else {
-            areaId.style.display = "none";
-        }
-        if (alertsId.style.display === "none") {
-            alertsId.style.display = "block";
-        } else {
-            alertsId.style.display = "none";
-        }
-        if (rulesId.style.display === "none") {
-            rulesId.style.display = "block";
-        } else {
-            rulesId.style.display = "none";
-        }
-        if (editZoneId.style.display === "none") {
-            editZoneId.style.display = "block";
-        } else {
-            editZoneId.style.display = "none";
-        }
+    //     if (areaId.style.display === "none") {
+    //         areaId.style.display = "block";
+    //     } else {
+    //         areaId.style.display = "none";
+    //     }
+    //     if (alertsId.style.display === "none") {
+    //         alertsId.style.display = "block";
+    //     } else {
+    //         alertsId.style.display = "none";
+    //     }
+    //     if (rulesId.style.display === "none") {
+    //         rulesId.style.display = "block";
+    //     } else {
+    //         rulesId.style.display = "none";
+    //     }
+    //     if (editZoneId.style.display === "none") {
+    //         editZoneId.style.display = "block";
+    //     } else {
+    //         editZoneId.style.display = "none";
+    //     }
 
-    }
+    // }
     
     // Get Routes
     function routes(){
@@ -56,7 +56,6 @@ var app = (function() {
     }
     routes();
     
-    let arrayZones = ["/sensors","/alerts","/actuators"];
     let areaId = document.getElementById("areaId");
     let alertsId = document.getElementById("alertsId");
     let rulesId = document.getElementById("rulesId");
@@ -72,9 +71,10 @@ var app = (function() {
                 const data = snapshot.val();
                 const sensorsArrays = Object.entries(data.sensors);
                 const actuatorsArrays = Object.entries(data.actuators);
+                const alertsArray = Object.keys(data.alerts);
+                const alertsArrayEnt = Object.entries(data.alerts);
                 //console.log(sensorsArrays.length);
-                let senObj = {};
-                let actObj = {};
+    
                 //Area, show sensors and their values
                 for(let i = 0; i < sensorsArrays.length; i++){
                     const outerDiv = document.createElement("div");
@@ -93,9 +93,86 @@ var app = (function() {
                     rightMostDiv.append(sensorsArrays[i][1]);
                     
                 }
-                // Alerts, here create SetInterval with CSS Properties in red for Alerts and SetTimeout for actuators
-                // Alerts, check alertOption and check vs value
-                // check if actuatorsArrays[i][1] =="OFF" ,then not visualize
+                //TODO:Alerts, here create SetInterval with CSS Properties in red for Alerts and SetTimeout for actuators
+                // check sensors in alerts and filter them
+                // get alertOption Value and see the option
+                // (if range &&( ( minVal < Val)  && (Val < maxVal))) -> No Alert to Show
+                // else -> Alert Warning
+                // if (below && if (alertVal < Val))
+                // else -> Alert Warning
+                // if ( above && if (alertVal > Val))
+                // else -> Alert Warning
+
+                for(let i = 0; i < alertsArray.length; i++){
+                    const alertCond = alertsArrayEnt[i][1];
+                    const alertCondKeys = Object.keys(alertCond);
+                    console.log(alertCondKeys.length);
+                    //console.log(alertCond.alertMaxValue);
+                    if(alertCondKeys.length === 3){
+                        if(sensorsArrays[i][1]>alertCond.alertMaxValue || sensorsArrays[i][1] < alertCond.alertMinValue){
+                            const outerDiv = document.createElement("div");
+                            outerDiv.setAttribute("class","d-flex mt-1");
+                            const leftMostDiv = document.createElement("div");
+                            const leftStrCnt = document.createElement("strong");
+                            leftStrCnt.append(sensorsArrays[i][0] );
+
+                            const centDiv = document.createElement("div");
+                            centDiv.setAttribute("class","hstack gap-2 ms-auto")
+                            const rightMostDiv = document.createElement("div");
+                            rightMostDiv.setAttribute("class","text text-danger");
+                            alertsId.appendChild(outerDiv);
+                            outerDiv.appendChild(leftMostDiv);
+                            outerDiv.appendChild(centDiv);
+                            centDiv.appendChild(rightMostDiv);
+                            leftMostDiv.append(leftStrCnt);
+                            rightMostDiv.append("Warning,outside range");
+                        }
+                    } else {
+                        if(alertCond.hasOwnProperty("alertOption") && alertCond.alertOption ==="below")
+                        {
+                            const outerDiv = document.createElement("div");
+                            outerDiv.setAttribute("class","d-flex mt-1");
+                            const leftMostDiv = document.createElement("div");
+                            const leftStrCnt = document.createElement("strong");
+                            leftStrCnt.append(sensorsArrays[i][0] );
+
+                            const centDiv = document.createElement("div");
+                            centDiv.setAttribute("class","hstack gap-2 ms-auto")
+                            const rightMostDiv = document.createElement("div");
+                            rightMostDiv.setAttribute("class","text text-danger");
+                            alertsId.appendChild(outerDiv);
+                            outerDiv.appendChild(leftMostDiv);
+                            outerDiv.appendChild(centDiv);
+                            centDiv.appendChild(rightMostDiv);
+                            leftMostDiv.append(leftStrCnt);
+                            rightMostDiv.append("Warning,below value");
+                        }
+                        else if(alertCond.hasOwnProperty("alertOption") && alertCond.alertOption ==="above"){
+                            const outerDiv = document.createElement("div");
+                            outerDiv.setAttribute("class","d-flex mt-1");
+                            const leftMostDiv = document.createElement("div");
+                            const leftStrCnt = document.createElement("strong");
+                            leftStrCnt.append(sensorsArrays[i][0] );
+
+                            const centDiv = document.createElement("div");
+                            centDiv.setAttribute("class","hstack gap-2 ms-auto")
+                            const rightMostDiv = document.createElement("div");
+                            rightMostDiv.setAttribute("class","text text-danger");
+                            alertsId.appendChild(outerDiv);
+                            outerDiv.appendChild(leftMostDiv);
+                            outerDiv.appendChild(centDiv);
+                            centDiv.appendChild(rightMostDiv);
+                            leftMostDiv.append(leftStrCnt);
+                            rightMostDiv.append("Warning,above value");
+                        }
+                    }
+                    // } else 
+                    
+                    // {
+                    //     if{alert}
+                    // }
+                }
+
                 for(let i = 0; i < actuatorsArrays.length; i++){
                     if(actuatorsArrays[i][1] === "ON"){
                         const outerDiv = document.createElement("div");
@@ -252,32 +329,261 @@ var app = (function() {
         });
 
     }
-    
-    function visualizeRules(optPick,rulesId){
-        rulesId.innerHTML = "";
-        let getTable = "/ESP"+ optPick + arrayZones[1];
-        const path = ref(db,getTable);
-        onValue(path,(snapshot) =>{
-            if(snapshot.exists()){
-                const data = snapshot.val();
-                const keys = Object.keys(data.sensors);
-                console.log(keys);
-                // Create form with Alerts Edition;
+    function zoneAdd(){ 
+        const divZoneElem = document.getElementById("zoneElem");
+        // Create form
+        const zoneEditForm = document.createElement("form");
+        zoneEditForm.setAttribute("id","zoneEditForm");
+        zoneEditForm.setAttribute("class","formRules");
+        divZoneElem.appendChild(zoneEditForm);
+
+        //Create div row
+        const divRowElem = document.createElement("div");
+        divRowElem.setAttribute("id","divRowElem");
+        divRowElem.setAttribute("class","row gy-2 gx-3 align-items-center");
+        zoneEditForm.appendChild(divRowElem);
+        // Create Column Sensor
+        const divColSens = document.createElement("div");
+        divColSens.setAttribute("id","divColSens");
+        divColSens.setAttribute("class","col-sm-6");
+        divRowElem.appendChild(divColSens);
+        // Create Label Sensors
+        const labSens = document.createElement("div");
+        divColSens.appendChild(labSens);
+        const labSensText = document.createTextNode("Sensors");
+        labSens.appendChild(labSensText);
+
+        // Create Column Actuator
+        const divColActs = document.createElement("div");
+        divColActs.setAttribute("id","divColActs");
+        divColActs.setAttribute("class","col-sm-6");
+        divRowElem.appendChild(divColActs);
+
+        // Create Label Actuators
+        const labActs = document.createElement("div");
+        divColActs.appendChild(labActs);
+        const labActsText = document.createTextNode("Actuators");
+        labActs.appendChild(labActsText);
+
+        const numSens = document.createElement("input");
+        numSens.setAttribute("id","numSensId");
+        numSens.setAttribute("type","number");
+        numSens.setAttribute("class","form-control-sm");
+        numSens.setAttribute("placeholder","Number of sensors");
+        divColSens.appendChild(numSens);
+
+        const numActs = document.createElement("input");
+        numActs.setAttribute("id","numActsId");
+        numActs.setAttribute("type","number");
+        numActs.setAttribute("class","form-control-sm");
+        numActs.setAttribute("placeholder","Number of actuators");
+        divColActs.appendChild(numActs);
+
+        const numSensId = document.getElementById("numSensId");
+        const numActsId = document.getElementById("numActsId");
+        //TODO, create new div row, 2 div col with Ids divColSensAdd & divColActsAdd
+        const divRowAdd = document.createElement("div");
+        divRowAdd.setAttribute("id","divRowAdd");
+        divRowAdd.setAttribute("class","row");
+        zoneEditForm.appendChild(divRowAdd);
+
+        const divColSensAdz = document.createElement("div");
+        divColSensAdz.setAttribute("id","divColSensAdd");
+        divColSensAdz.setAttribute("class","col");
+        divRowAdd.appendChild(divColSensAdz);
+
+        const divColActsAdz = document.createElement("div");
+        divColActsAdz.setAttribute("id","divColActsAdd");
+        divColActsAdz.setAttribute("class","col");
+        divRowAdd.appendChild(divColActsAdz);
+
+        const divColSensAdd = document.getElementById("divColSensAdd");
+        const divColActsAdd = document.getElementById("divColActsAdd");
+        // Sensors creation
+        numSensId.addEventListener("change",()=>{
+            // strVal();
+            divColSensAdd.innerHTML = "";
+            let numSensors = parseInt(numSens.value);
+            console.log(numSensors);
+            if (isNaN(numSensors)) {
+                numSensors = 0;
+            }
+            for (let i = 0; i < numSensors; i++) {
+                // Create a new label
+                const newLabelName = document.createElement("label");
+                newLabelName.innerHTML = "Sensor Name" + (i + 1) + ":";
+
+                // Create a new sensor with name and normal value
+                const newInputName = document.createElement("input");
+                newInputName.type = "text";
+                newInputName.className ="senNam";
+                newInputName.name = "sensorName" + (i + 1);
+
+                const newLabInputValue = document.createElement("label");
+                newLabInputValue.innerHTML = "Normal Value" + ":";
+
+                const newInputValue = document.createElement("input");
+                newInputValue.type = "number";
+                newInputValue.className ="senVal";
+                newInputValue.name = "sensorNormalValue" + (i+1);
+
+                // // Create measurement unit
+                // const newMeas = document.createElement("label");
+                // newMeas.innerHTML = "Measurement Unit" + ":";
+
+                // const newMeasInput = document.createElement("input");
+                // newMeasInput.type = "text";
+                // newMeasInput.className ="senVal";
+                // newMeasInput.name = "sensorMeasUnit" + (i+1);
+
+                // Select with options to define alert or normal range of behaviour
+                const newSelectLabel = document.createElement("label");
+                newSelectLabel.innerHTML = "Select an option that fits best for one value or a range";
+                
+                const newSelect = document.createElement("select");
+                newSelect.id = "alertOption";
+                newSelect.name ="alertOption"
+
+                // Select creation
+                const newOptSel = document.createElement("option");
+                newOptSel.class = "optDefault";
+                newOptSel.setAttribute("selected","selected");
+                newOptSel.setAttribute("value","selected");
+                newOptSel.appendChild(document.createTextNode("Pick an option"));
+                
+                const newOpt1 = document.createElement("option");
+                newOpt1.className = "belowValue";
+                
+                newOpt1.setAttribute("value","below");
+                
+                newOpt1.appendChild(document.createTextNode("Alert when below normal value"));
+
+                const newOpt2 = document.createElement("option");
+                newOpt2.className = "aboveValue";
+                
+                newOpt2.setAttribute("value","above");
+                newOpt2.appendChild(document.createTextNode("Alert when above normal value above"));
+
+                const newOpt3 = document.createElement("option");
+                newOpt3.className = "rangeValue";
+                
+                newOpt3.setAttribute("value","range");
+                newOpt3.appendChild(document.createTextNode("Create a range of normal behaviour values"));
+
+                newSelect.appendChild(newOptSel);
+                newSelect.appendChild(newOpt1);
+                newSelect.appendChild(newOpt2);
+                newSelect.appendChild(newOpt3);
+                
+                const divOptions = document.createElement("div");
+                divOptions.className = "divOptions";
+                // Append the label and input to the divColSensAdd div
+                divColSensAdd.appendChild(newLabelName);
+                divColSensAdd.appendChild(newInputName);
+                divColSensAdd.appendChild(newLabInputValue);
+                divColSensAdd.appendChild(newInputValue);
+                // divColSensAdd.appendChild(newMeas);
+                // divColSensAdd.appendChild(newMeasInput);
+                divColSensAdd.appendChild(newSelectLabel);
+                divColSensAdd.appendChild(newSelect);
+                divColSensAdd.appendChild(divOptions);
+
+            }
+            // call function to detect changes in the select
+            let selectClass = document.getElementById("alertOption");
+            let divOptions = document.querySelectorAll("divOptions");
+            //console.log(selectClass);
+            // selectClass.addEventListener("change",() => {
+            //     console.log(selectClass);
+            //     console.log(divOptions);
+            // });
+            //selectAlerts(selectClass,divOptions);
+         });
+         // Actuators creation
+        numActsId.addEventListener("change",()=>{
+            // strVal();
+            divColActsAdd.innerHTML = "";
+            let numActuators = parseInt(numActs.value);
+            console.log(numActuators);
+            if (isNaN(numActuators)) {
+                numActuators = 0;
+            }
+
+            for (let i = 0; i < numActuators; i++) {
+                // Create a new label
+                const newLabelName = document.createElement("label");
+                newLabelName.innerHTML = "Actuator Name" + (i + 1) + ":";
+
+                // Create a new input
+                const newInputName = document.createElement("input");
+                newInputName.type = "text";
+                newInputName.className ="actNam";
+                newInputName.name = "actuatorName" + (i + 1);
+
+                // Append the label and input to the divColActsAdd div
+                divColActsAdd.appendChild(newLabelName);
+                divColActsAdd.appendChild(newInputName);
             }
         });
-    }
 
+        // Create submit button of form
+        const btnZoneEdit = document.createElement("input");
+        btnZoneEdit.setAttribute("id","zoneFormBtn");
+        btnZoneEdit.setAttribute("type","button");
+        btnZoneEdit.setAttribute("value","Submit");
+        zoneEditForm.appendChild(btnZoneEdit);
+        let btZnEdit = document.getElementById("zoneFormBtn");
+
+        //Capture event onSubmit
+        btZnEdit.addEventListener("click",() =>{
+            const senNams = document.getElementsByClassName("senNam");
+            const senVals = document.getElementsByClassName("senVal");
+            const numActs = document.getElementsByClassName("numActs");
+            console.log(senNams);
+            //const alertVals = document.getElementsByClassName("alertVal");
+        //     let newElems = {};
+        //     let newAlertDef = {};
+        //     let sensName = "";
+        //     let normValue = "";
+        //     for (let i = 0; i < formAdd.elements.length - 1; i++) {
+        //         let input = formAdd.elements[i];
+               
+        //         console.log(input.name);
+        //         if(input.value == "" || input.value == "selected"){
+        //            alert("All fields must be filled out.");
+        //            return false;
+        //         }
+        //         else if(input.name.includes("actuator") ){
+        //            newElems[input.value] ="OFF";
+        //         }
+                
+        //         else if(input.name.includes("sensorName") ) {
+        //             let sensName = input.value;
+        //         }
+                
+                
+        //         //console.log(formData);
+        //    //     alert(formData);
+        //    }
+            //console.log(newSpaFirebase);
+            // const path = ref(db,"/ESPChicken");
+            // update(path,updateChicken)
+            // off(path);
+        });
+        
+
+    }
     // Function Removal Elements
     function zoneRemoval(optPick){
         const pathName = 'ESP' + optPick;
         const path = ref(db,pathName);
-        console.log(optPick);
+        //console.log(optPick);
         onValue(path,(snapshot)=>{
             if (snapshot.exists()){
                 const data = snapshot.val();
                 const keysSensors = Object.keys(data.sensors);
                 const keysActuators = Object.keys(data.actuators);
-                console.log(keysSensors);
+                //console.log(keysSensors);
                 const divZoneElem = document.getElementById("zoneElem");
                 // Create form
                 const zoneEditForm = document.createElement("form");
@@ -368,7 +674,7 @@ var app = (function() {
                         // remove element
                         if(data.sensors.hasOwnProperty(keyText)){
                             let pathSens = ref(db,pathName+"/sensors/" + keyText);
-                            console.log(pathSens);
+                            //console.log(pathSens);
                             remove(pathSens);
                         }
                         else if(data.actuators.hasOwnProperty(keyText)){
@@ -401,7 +707,7 @@ var app = (function() {
             case "add":
                 // Create 2 inputs specifying numbers of sensors & actuators, then each one, then values and submit -> See form.js    
                 document.getElementById("zoneElem").innerHTML = "";
-                //zoneAdd();
+                zoneAdd();
                 break;
             case "remove":
                 const optPick = routeSel();
@@ -412,7 +718,7 @@ var app = (function() {
                 // Also submit, delete HTML elements related with those marked 
         }
     });
-
+    
     let select = document.getElementById("routing");
     function routeSel(){
         if (select.value === "default"){

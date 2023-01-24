@@ -1,5 +1,5 @@
 import { getDatabase, ref, onValue, update,off,remove} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-import {doorAPI} from "./doorCont.js";
+import {doorAPI} from "../doorCont.js";
 var app = (function() {
     const db = getDatabase();
     const path = ref(db,"ESPChicken");
@@ -8,7 +8,6 @@ var app = (function() {
     let alertChickenId = document.getElementById("alertChickenId");
     let selZoneEdit = document.getElementById("optElem");
     let rulesChickenId = document.getElementById("rulesChickenId");
-    
     
     const spaSendFb = {
         'lux': [0,1],
@@ -635,7 +634,8 @@ var app = (function() {
                 const data = snapshot.val();
                 const sensorsArrays = Object.entries(data.sensors);
                 const actuatorsArrays = Object.entries(data.actuators);
-                console.log(sensorsArrays.length);
+                const alertsArray = Object.keys(data.alerts);
+                console.log(alertsArray);
                 let senObj = {};
                 let actObj = {};
                 //Area, show sensors and their values
@@ -656,8 +656,22 @@ var app = (function() {
                     rightMostDiv.append(sensorsArrays[i][1]);
                     
                 }
+                
                 // TODO:Alerts, here create SetInterval with CSS Properties in red for Alerts and SetTimeout for actuators
-                // TODO:Alerts, check alertOption and check vs value
+                // check sensors in alerts and filter them
+                // get alertOption Value and see the option
+                // (if range &&( ( minVal < Val)  && (Val < maxVal))) -> No Alert to Show
+                // else -> Alert Warning
+                // if (below && if (alertVal < Val))
+                // else -> Alert Warning
+                // if ( above && if (alertVal > Val))
+                // else -> Alert Warning
+
+                for(let i = 0; i < alertsArray.length; i++){
+
+                }
+
+                
                 // check if actuatorsArrays[i][1] =="OFF" ,then not visualize
                 for(let i = 0; i < actuatorsArrays.length; i++){
                     if(actuatorsArrays[i][1] === "ON"){

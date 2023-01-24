@@ -1,4 +1,4 @@
-import { getDatabase, ref,onValue} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { getDatabase, ref,onValue,update,off} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 const db = getDatabase();
 let pathAPI = ref(db,"/Additional Info/API/");
 let cutTime = onValue(pathAPI,(snapshot)=>{
@@ -6,15 +6,12 @@ let cutTime = onValue(pathAPI,(snapshot)=>{
         const dataSn = snapshot.val();
         const dataAPI = dataSn.currentTime;
         let objTime = {}
-        objTime["currenTime"] = dataAPI;
+        objTime["contDoor"] = dataAPI;
         console.log(dataAPI);
         return objTime;
     }
 });
 export const doorAPI = async function (){
-    
-    
-    
     
     // "https://api.ipgeolocation.io/ipgeo?apiKey=554653b913b04d24b5a7e80804f95a82"
     let response = await fetch('https://api.ipgeolocation.io/ipgeo?apiKey=554653b913b04d24b5a7e80804f95a82');
@@ -46,9 +43,9 @@ export const doorAPI = async function (){
             // code for between sunrise and sunset
             //"doorControl" : "ON", then after 5 minutes set to "OFF"
             let doorAfterSunrise = {};
-                if(weatherObj["contDoor"] === 1){
+                if(cutTime === 1){
                   console.log("Door was already open");
-                  weatherObj["contDoor"] = 0;
+                  cutTime= 0;
                   doorAfterSunrise["doorControl"] = "OFF";
                   update(pathAPI,doorAfterSunrise)
                   setTimeout(() => {
@@ -57,7 +54,7 @@ export const doorAPI = async function (){
                     off(pathAPI);
                   }, 60000);
                 } else {
-                  weatherObj["contDoor"] = 1;
+                  cutTime = 1;
                   doorAfterSunrise["doorControl"] = "ON";
                   update(pathAPI,doorAfterSunrise)
                   setTimeout(() => {
@@ -72,10 +69,9 @@ export const doorAPI = async function (){
             //"doorControl" : "ON", then after 5 minutes set to "OFF"
             console.log("After sunset");
             let doorAfterSunset = {};
-                if(weatherObj["contDoor"] === 1){
+                if(cutTime === 1){
                   console.log("Door was already open");
-                  weatherObj["contDoor"] = 0;
-                  let doorAfterSunrise = {};
+                  cutTime = 0;
                   doorAfterSunset["doorControl"] = "OFF";
                   update(pathAPI,doorAfterSunset)
                   setTimeout(() => {
@@ -84,7 +80,7 @@ export const doorAPI = async function (){
                     off(pathAPI);
                   }, 60000);
                 } else {
-                  weatherObj["contDoor"] = 1;
+                  cutTime["contDoor"] = 1;
                   doorAfterSunset["doorControl"] = "ON";
                   update(pathAPI,doorAfterSunset)
                   setTimeout(() => {
