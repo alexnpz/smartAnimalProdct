@@ -2,7 +2,7 @@ import { getDatabase, ref,set,onValue,off,child} from "https://www.gstatic.com/f
 import {doorAPI} from "./doorCont.js"
 var app = (function() {
         const db = getDatabase();
-        //const doorC = doorAPI();
+        const doorC = doorAPI();
         function valForm(){
             const formRules = document.getElementById("zonecreationform");
             let formData = new FormData();
@@ -197,7 +197,7 @@ var app = (function() {
         
         //TODO: Zone exists()
         zoneExists.addEventListener("change",()=>{
-
+            
         });
 
         numSens.addEventListener("change",()=>{

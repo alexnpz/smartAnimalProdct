@@ -208,8 +208,9 @@ var app = (function() {
                 
                 const alertsVals = Object.values(data.alerts);
                 const alertsDB = Object.entries(data.alerts);
-                console.log(alertsVals);
-                console.log(alertsVals[0].alertOption);
+                console.log(alertsDB)
+                //console.log(alertsVals);
+                //console.log(alertsVals[0].alertOption);
                 
                 const divRowLabels = document.createElement("div");
                 divRowLabels.setAttribute("class"," row d-flex mt-1");
@@ -246,7 +247,7 @@ var app = (function() {
                     divRowRules.appendChild(rightMostDiv);
                     
                     if(alertsVals[i].alertOption === "range"){
-                        console.log("here");
+                        //console.log("here");
                         const minVal = document.createElement("input");
                         minVal.setAttribute("type","number");
                         minVal.setAttribute("name",keysAlerts[i]+":" + "alertMinValue");
@@ -317,7 +318,7 @@ var app = (function() {
                     finalObject.alerts[sensorType].alertOption = alertOption;
                 }
 
-                    console.log(finalObject.alerts.alertOption);
+                    //console.log(finalObject.alerts.alertOption);
 
                     update(path, finalObject);
                     off(path);
@@ -329,7 +330,77 @@ var app = (function() {
         });
 
     }
-    function zoneAdd(){ 
+    function selectAlerts(selectClass,divOptions){
+        // strVal();
+        selectClass.addEventListener("change", () => {
+            divOptions.innerHTML = "";
+            let alertArray = [];
+            if(selectClass.value ==="selected"){
+                return;
+            }
+            else if(selectClass.value === "range"){
+                const newLabMinValue = document.createElement("label");
+                newLabMinValue.innerHTML = "Min Value" + ":";
+
+                const newMinValue = document.createElement("input");
+                newMinValue.id = "alertMinValueId";
+                alertArray.push(newMinValue.id);
+                newMinValue.type = "number";
+                newMinValue.className ="alertSenValMin";
+                newMinValue.name = "alertMinValue";
+
+                const newLabMaxValue = document.createElement("label");
+                newLabMaxValue.innerHTML = "Max Value" + ":";
+
+                const newMaxValue = document.createElement("input");
+                newMaxValue.id = "alertMaxValueId";
+                alertArray.push(newMaxValue.id);
+                newMaxValue.type = "number";
+                newMaxValue.className ="alertSenValMax";
+                newMaxValue.name = "alertMaxValue";
+
+                divOptions.appendChild(newLabMinValue);
+                divOptions.appendChild(newMinValue);
+                divOptions.appendChild(newLabMaxValue);
+                divOptions.appendChild(newMaxValue);
+                return alertArray;
+            }
+            else if(selectClass.value === "below") {
+                const newLabAlertValue = document.createElement("label");
+                newLabAlertValue.innerHTML = "Alert Value" + ":";
+
+                const newAlertValue = document.createElement("input");
+                newAlertValue.setAttribute("class","alertValueBelowId");
+                alertArray.push(newAlertValue.className);
+
+                newAlertValue.type = "number";
+                newAlertValue.className ="alertSenVal";
+                newAlertValue.name = "alertValue";
+                divOptions.appendChild(newLabAlertValue);
+                divOptions.appendChild(newAlertValue);
+                return alertArray;
+            }
+            else if(selectClass.value === "above"){
+                const newLabAlertValue = document.createElement("label");
+                newLabAlertValue.innerHTML = "Alert Value" + ":";
+
+                const newAlertValue = document.createElement("input");
+                newAlertValue.setAttribute("class","alertValueAboveId");
+                alertArray.push(newAlertValue.className);
+
+                newAlertValue.type = "number";
+                newAlertValue.className ="alertSenVal";
+                newAlertValue.name = "alertValue";
+                divOptions.appendChild(newLabAlertValue);
+                divOptions.appendChild(newAlertValue);
+                return alertArray;
+            }
+        });
+    }
+    function zoneAdd(optPick){ 
+        const pathName = 'ESP' + optPick;
+        //console.log(pathName);
+        const path = ref(db,pathName);
         const divZoneElem = document.getElementById("zoneElem");
         // Create form
         const zoneEditForm = document.createElement("form");
@@ -404,7 +475,7 @@ var app = (function() {
             // strVal();
             divColSensAdd.innerHTML = "";
             let numSensors = parseInt(numSens.value);
-            console.log(numSensors);
+            //console.log(numSensors);
             if (isNaN(numSensors)) {
                 numSensors = 0;
             }
@@ -441,31 +512,30 @@ var app = (function() {
                 newSelectLabel.innerHTML = "Select an option that fits best for one value or a range";
                 
                 const newSelect = document.createElement("select");
-                newSelect.id = "alertOption";
-                newSelect.name ="alertOption"
+                newSelect.setAttribute("class","alertOption");
 
                 // Select creation
                 const newOptSel = document.createElement("option");
-                newOptSel.class = "optDefault";
+                newOptSel.setAttribute("class", "optDefault") ;
                 newOptSel.setAttribute("selected","selected");
                 newOptSel.setAttribute("value","selected");
                 newOptSel.appendChild(document.createTextNode("Pick an option"));
                 
                 const newOpt1 = document.createElement("option");
-                newOpt1.className = "belowValue";
+                newOpt1.setAttribute("class","belowValue");
                 
                 newOpt1.setAttribute("value","below");
                 
                 newOpt1.appendChild(document.createTextNode("Alert when below normal value"));
 
                 const newOpt2 = document.createElement("option");
-                newOpt2.className = "aboveValue";
+                newOpt2.setAttribute("class","aboveValue");
                 
                 newOpt2.setAttribute("value","above");
                 newOpt2.appendChild(document.createTextNode("Alert when above normal value above"));
 
                 const newOpt3 = document.createElement("option");
-                newOpt3.className = "rangeValue";
+                newOpt3.setAttribute("class","rangeValue");
                 
                 newOpt3.setAttribute("value","range");
                 newOpt3.appendChild(document.createTextNode("Create a range of normal behaviour values"));
@@ -476,7 +546,7 @@ var app = (function() {
                 newSelect.appendChild(newOpt3);
                 
                 const divOptions = document.createElement("div");
-                divOptions.className = "divOptions";
+                divOptions.setAttribute("class","divOptions");
                 // Append the label and input to the divColSensAdd div
                 divColSensAdd.appendChild(newLabelName);
                 divColSensAdd.appendChild(newInputName);
@@ -490,21 +560,20 @@ var app = (function() {
 
             }
             // call function to detect changes in the select
-            let selectClass = document.getElementById("alertOption");
-            let divOptions = document.querySelectorAll("divOptions");
-            //console.log(selectClass);
-            // selectClass.addEventListener("change",() => {
-            //     console.log(selectClass);
-            //     console.log(divOptions);
-            // });
-            //selectAlerts(selectClass,divOptions);
+            let selectClass = document.getElementsByClassName("alertOption");
+            let divOptions = document.getElementsByClassName("divOptions");
+            for (let i = 0; i < selectClass.length; i++) {
+                for(let j = 0; j < divOptions.length; j++){
+                    selectAlerts(selectClass[j],divOptions[j]);
+                } 
+            }
          });
          // Actuators creation
         numActsId.addEventListener("change",()=>{
             // strVal();
             divColActsAdd.innerHTML = "";
             let numActuators = parseInt(numActs.value);
-            console.log(numActuators);
+            //console.log(numActuators);
             if (isNaN(numActuators)) {
                 numActuators = 0;
             }
@@ -539,7 +608,59 @@ var app = (function() {
             const senNams = document.getElementsByClassName("senNam");
             const senVals = document.getElementsByClassName("senVal");
             const numActs = document.getElementsByClassName("numActs");
-            console.log(senNams);
+            //console.log(senNams);
+
+            const formRules = document.getElementById("zoneEditForm");
+            let formData = new FormData();
+        
+            // Check formElements if at least a name exists and then sends data
+            for (let i = 0; i < formRules.elements.length - 1; i++) {
+                 let input = formRules.elements[i];
+                
+                 //console.log(input.name);
+                 if(input.value == "" || input.value == "selected"){
+                    alert("All fields must be filled out.");
+                    return false;
+                 }
+                 else if(input.name.includes("actuator") ){
+                    formData.append(input.name,input.value);
+                    formData.append(input.name + "State","OFF");
+                 }
+                 
+                 else {
+                     formData.append(input.name,input.value);
+                 } 
+            }
+
+            let numElems = {};
+            let sensorsData = {};
+            let alertsData = {};
+            let actuatorsData = {};
+
+            for (const [key, value] of formData.entries()) {
+                if(key.includes("numSens") || key.includes("numActs")){
+                    numElems[key] = value;
+                }
+                if(key.includes("sensor")){
+                    sensorsData[key] = value;
+                }
+                else if(key.includes("alert")){
+                    alertsData[value] = value;
+                }
+                else if(key.includes("actuator")){
+                    actuatorsData[key] = value;
+                }
+            }
+            const sensorsPath = pathName + "/" + "sensors";
+            const alertsPath = pathName + "/" + "alerts";
+            const actuatorsPath = pathName + "/" + "actuators";
+            update(sensorsPath,sensorsData);
+            off(path)
+            update(alertsPath,sensorsData);
+            off(path)
+            update(actuatorsPath,sensorsData);
+            off(path);
+
             //const alertVals = document.getElementsByClassName("alertVal");
         //     let newElems = {};
         //     let newAlertDef = {};
@@ -566,7 +687,7 @@ var app = (function() {
         //    //     alert(formData);
         //    }
             //console.log(newSpaFirebase);
-            // const path = ref(db,"/ESPChicken");
+            // const path = ref(db,"/teste");
             // update(path,updateChicken)
             // off(path);
         });
@@ -707,7 +828,8 @@ var app = (function() {
             case "add":
                 // Create 2 inputs specifying numbers of sensors & actuators, then each one, then values and submit -> See form.js    
                 document.getElementById("zoneElem").innerHTML = "";
-                zoneAdd();
+                let optPicks = routeSel();
+                zoneAdd(optPicks);
                 break;
             case "remove":
                 const optPick = routeSel();
