@@ -1,32 +1,115 @@
-import { getDatabase, ref,set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { getDatabase, ref,off,update,get} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-// Using jQuery to get IP, Geolocation and then request OpenWeatherMap and get some useful data
+// Using jQuery to get IP, General Geolocation and then request OpenWeatherMap and get some useful data
+//https://ipgeolocation.io/documentation.html
+const db = getDatabase();
+let pathAPI = ref(db,"/Additional Info/API/");
+let path = ref(db,"/Additional Info/activity/");
 $().ready(function () {
+  let weatherObj = {};
   function weatherToday () {
+    //$.getJSON("")
     
-    $.getJSON("https://ipinfo.io/geo",function(rsp){
-      let region = rsp.city;
-      $('#apilocation').text(region);});
-    
-    $.getJSON('https://api.openweathermap.org/data/2.5/weather?units=metric&q='+ "leiria" +'&appid=d1970f87022cd49037d9f60841422697',
-      function(response) {
-        $('#apitemperature').text(response.main.temp + ' ºC');
-        $('#apihumidity').text(response.main.humidity + ' %');
-        // UTC unix
-        let $sunriseUTC = new Date(response.sys.sunrise * 1000);
-        let $localDateSunrise = `${$sunriseUTC.getHours()}:${$sunriseUTC.getMinutes()}:${$sunriseUTC.getSeconds()} AM`;
-        $('#apisunrise').text($localDateSunrise);
-        let $sunsetUTC = new Date(response.sys.sunset * 1000);
-        let $localDateSunset = `${$sunsetUTC.getHours()}:${$sunsetUTC.getMinutes()}:${$sunsetUTC.getSeconds()} PM`;
-        $('#apisunset').text($localDateSunset);                  
-      });
-    
-  }   
+    $.getJSON("https://api.ipgeolocation.io/ipgeo?apiKey=554653b913b04d24b5a7e80804f95a82", function(rsp){
+      let $country_name = rsp.country_name;
+      weatherObj["location"] = $country_name;
+      $('#apilocation').text($country_name);
+      $.getJSON('https://api.openweathermap.org/data/2.5/weather?units=metric&q='+ $country_name +'&appid=d1970f87022cd49037d9f60841422697',
+        function(response) {
+          $('#apitemperature').text(response.main.temp + ' ºC');
+          weatherObj["temperature"] = response.main.temp;
+          $('#apihumidity').text(response.main.humidity + ' %');
+          weatherObj["humidity"] = response.main.humidity;
+          // UTC unix
+          let $currentTime = Date.now();
+          weatherObj["currentTime"] = $currentTime;
+          let $sunriseUTC = new Date(response.sys.sunrise * 1000);
+          let $sunriseTimeStamp = $sunriseUTC.getTime();
+          weatherObj["sunriseMilliseconds"] = $sunriseTimeStamp;
+          let $localDateSunrise = `${$sunriseUTC.getHours()}:${$sunriseUTC.getMinutes()}:${$sunriseUTC.getSeconds()} AM`;
+          $('#apisunrise').text($localDateSunrise);
+          let $sunsetUTC = new Date(response.sys.sunset * 1000);
+          let $sunsetTimeStamp = $sunsetUTC.getTime();
+          weatherObj["sunsetMilliseconds"] = $sunsetTimeStamp;
+          let $localDateSunset = `${$sunsetUTC.getHours()}:${$sunsetUTC.getMinutes()}:${$sunsetUTC.getSeconds()} PM`;
+          $('#apisunset').text($localDateSunset);
+          console.log(weatherObj["currentTime"]);
+          switch (true) {
+            case  weatherObj["currentTime"] < weatherObj["sunriseMilliseconds"]:
+                // code for before sunrise
+                //"doorControl" : "OFF" false
+                let doorBeforeSunrise = {};
+                doorBeforeSunrise["doorControl"] = "OFF";
+                update(pathAPI,doorBeforeSunrise);
+                off(pathAPI);
+                console.log("Before sunrise");
+                break;
+            case weatherObj["currentTime"] >=  weatherObj["sunriseMilliseconds"] && weatherObj["currentTime"] < weatherObj["sunsetMilliseconds"]:
+                // code for between sunrise and sunset
+                //"doorControl" : "ON", then after 5 minutes set to "OFF"
+                console.log("Between sunrise and sunset");
+                let doorAfterSunrise = {};
+                if(weatherObj["contDoor"] === 1){
+                  console.log("Door was already open");
+                  weatherObj["contDoor"] = 0;
+                  doorAfterSunrise["doorControl"] = "OFF";
+                  update(pathAPI,doorAfterSunrise)
+                  setTimeout(() => {
+                    doorAfterSunrise["doorControl"] = "OFF";
+                    update(pathAPI,doorAfterSunrise);
+                    off(pathAPI);
+                  }, 60000);
+                } else {
+                  weatherObj["contDoor"] = 1;
+                  doorAfterSunrise["doorControl"] = "ON";
+                  update(pathAPI,doorAfterSunrise)
+                  setTimeout(() => {
+                    doorAfterSunrise["doorControl"] = "OFF";
+                    update(pathAPI,doorAfterSunrise);
+                    off(pathAPI);
+                  }, 60000);
+                }
+                break;
+            case weatherObj["currentTime"] >= weatherObj["sunsetMilliseconds"]:
+                // code for after sunset
+                //"doorControl" : "ON", then after 5 minutes set to "OFF"
+                console.log("After sunset");
+                let doorAfterSunset = {};
+                if(weatherObj["contDoor"] === 1){
+                  console.log("Door was already open");
+                  weatherObj["contDoor"] = 0;
+                  let doorAfterSunrise = {};
+                  doorAfterSunset["doorControl"] = "OFF";
+                  update(pathAPI,doorAfterSunset)
+                  setTimeout(() => {
+                    doorAfterSunset["doorControl"] = "OFF";
+                    update(pathAPI,doorAfterSunset);
+                    off(pathAPI);
+                  }, 60000);
+                } else {
+                  weatherObj["contDoor"] = 1;
+                  doorAfterSunset["doorControl"] = "ON";
+                  update(pathAPI,doorAfterSunset)
+                  setTimeout(() => {
+                    doorAfterSunset["doorControl"] = "OFF";
+                    update(pathAPI,doorAfterSunset);
+                    off(pathAPI);
+                  }, 60000);
+                }
+                break;
+            default:
+                console.log("Invalid case");
+          }
+          update(pathAPI,weatherObj);
+          off(pathAPI);
+      })
+    })
+  }
   weatherToday();
- });
+  
+});
 
 var app = (function() {
-  const db = getDatabase();
   const idActivity = {  "0": "education",
                         "1": "recreational", 
                         "2":"social", 
@@ -45,17 +128,23 @@ var app = (function() {
   
   // Using SimplePlain Javascript, to request API & save in Firebase
   let select = document.getElementById("idactivity");
+  let actObj = {}
   select.addEventListener("change", async()=>{
     try{
       let selectionValue = select.value;
       console.log(selectionValue);
       if(idActivity.hasOwnProperty(selectionValue)){
-        let response = await fetch('https://www.boredapi.com/api/activity?type=' + idActivity[selectionValue]);
+        let selAct = idActivity[selectionValue];
+        console.log(selAct);
+        let response = await fetch('https://www.boredapi.com/api/activity?type=' + selAct);
         let data = await response.json();
         console.log(data.activity);
         alert(data.activity);
-        let path = ref(db,"/activity");
-        set(path, data.activity);
+        actObj[selAct] = data.activity
+        
+        update(path, actObj);
+        off(path);
+        return;
       }
     }
     catch(error){

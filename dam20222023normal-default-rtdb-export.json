@@ -1,0 +1,132 @@
+{
+  "Additional Info": {
+    "API": {
+      "currentTime": 1674305779418,
+      "doorControl": "ON",
+      "humidity": 71,
+      "location": "Portugal",
+      "sunriseMilliseconds": 1674287275000,
+      "sunsetMilliseconds": 1674322686000,
+      "temperature": 16.96
+    },
+    "activity": {
+      "cooking": "Prepare a dish from a foreign culture",
+      "education": "Watch a Khan Academy lecture on a subject of your choosing",
+      "recreational": "Do a jigsaw puzzle"
+    }
+  },
+  "ESPChicken": {
+    "actuators": {
+      "buzzer": "ON",
+      "motorFood": "ON",
+      "servMDoorNight": "ON",
+      "servo_left_sec": "ON"
+    },
+    "numActs": 4,
+    "numSens": 4,
+    "sensors": {
+      "lux": "LOW",
+      "move_left_sec": 10,
+      "move_right_sec": 10,
+      "ultrassonic": 10
+    }
+  },
+  "ESPSheep": {
+    "actuators": {
+      "door_servo_third": "ON",
+      "fan": "ON",
+      "minerals_servo": "ON"
+    },
+    "numActs": 3,
+    "numSens": 3,
+    "sensors": {
+      "hum_sensor": 90,
+      "temp_sensor": 27,
+      "water_quality_sensor": "BAD"
+    }
+  },
+  "ESPalpha": {
+    "actuators": {
+      "actuatorName1": "10",
+      "actuatorName1State": "ON"
+    },
+    "alerts": {
+      "alertMaxValue": "20",
+      "alertMinValue": "10",
+      "alertOption": "range"
+    },
+    "numActs": 1,
+    "numSens": 1,
+    "sensors": {
+      "sensorName1": "a",
+      "sensorNormalValue1": "1"
+    }
+  },
+  "routes": {
+    "16385247": "Sheep",
+    "18201816": "alpha",
+    "18292729": "Chicken"
+  },
+  "rulesChicken": {
+    "buzzer_freq": "1",
+    "leftMovSensor": "1",
+    "rightMovSensor": "1",
+    "rluminositymax": "0",
+    "rluminositymin": "10",
+    "ultrasonic": "1"
+  },
+  "rulesSheeps": {
+    "rdoor": "1",
+    "rtemperaturemin": "20",
+    "rthumiditymax": "5",
+    "rthumiditymin": "4",
+    "rwquality": "1"
+  },
+  "spaFirebase": {
+    "buzzer": [
+      0,
+      1
+    ],
+    "door_servo": 1,
+    "door_servo_third": 1,
+    "fan": "0",
+    "hum_sensor": "0",
+    "lcd": [
+      0,
+      1
+    ],
+    "lux": [
+      0,
+      1
+    ],
+    "minerals_servo": [
+      0,
+      1
+    ],
+    "move_left_sec": [
+      0,
+      1
+    ],
+    "move_right_sec": [
+      0,
+      1
+    ],
+    "servo_left_sec": [
+      0,
+      1
+    ],
+    "servo_right_sec": [
+      0,
+      1
+    ],
+    "temp_sensor": "0",
+    "ultrassonic": [
+      0,
+      1
+    ],
+    "water_quality_sensor": [
+      0,
+      1
+    ]
+  }
+}

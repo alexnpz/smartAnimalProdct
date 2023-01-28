@@ -1,7 +1,8 @@
-import { getDatabase, ref,set,onValue,off} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-
+import { getDatabase, ref,set,onValue,off,child} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import {doorAPI} from "./doorCont.js"
 var app = (function() {
         const db = getDatabase();
+        const doorC = doorAPI();
         function valForm(){
             const formRules = document.getElementById("zonecreationform");
             let formData = new FormData();
@@ -26,34 +27,54 @@ var app = (function() {
                  //console.log(formData);
             //     alert(formData);
             }
+            let numElems = {};
+            let sensorsData = {};
+            let alertsData = {};
+            let actuatorsData = {};
 
-            let jsonData = {};
             for (const [key, value] of formData.entries()) {
-                jsonData[key] = value;
-                
+                if(key.includes("numSens") || key.includes("numActs")){
+                    numElems[key] = value;
+                }
+                if(key.includes("sensor")){
+                    sensorsData[key] = value;
+                }
+                else if(key.includes("alert")){
+                    alertsData[value] = value;
+                }
+                else if(key.includes("actuator")){
+                    actuatorsData[key] = value;
+                }
             }
-            console.log(jsonData);
             const zoneName = formData.get("zoneName");
             // console.log(typeof zoneName);
             // // const jsonString = JSON.stringify(jsonData);
             const stringZone = "/ESP" + zoneName;
             console.log(stringZone);
-            // TODO: Create 3 childs: sensors, alerts and actuators
-
-            const dbPath = ref(db,stringZone);
+            let arrayZones = ["sensors","alerts","actuators"];
             
-            set(dbPath, jsonData);
+            console.log(arrayZones[0]);
+            
+            //console.log(subpath);
+            const dbPath = ref(db,stringZone);
+            const dbPathSensors = ref(db,stringZone + "/"+ arrayZones[0]);
+            const dbPathAlerts = ref(db,stringZone + "/" + arrayZones[1]);
+            const dbPathActuators = ref(db,stringZone + "/"+ arrayZones[2]);
+            set(dbPath,numElems);
+            set(dbPathSensors,sensorsData);
+            set(dbPathAlerts,alertsData);
+            set(dbPathActuators,actuatorsData);
+
             const routesPath = ref(db,"routes");
             let routeObj = {};
             let key = Math.floor(Math.random() * Math.pow(10, 8));
             routeObj[key] = zoneName;
-            // set(routesPath,zoneName);
             
             // Check if value exists, if does then appends new value and if doesn't create the table
             let locationExists = false;
             onValue(routesPath,(snapshot)  => {
                 if (snapshot.exists() && !locationExists){
-                    console.log("Location exists");
+                    console.log("Location exists, updating...");
                     locationExists = true;
                     let data = snapshot.val();
                     Object.assign(data,routeObj);
@@ -63,7 +84,7 @@ var app = (function() {
                     return;
                 }
                 if(!snapshot.exists() && !locationExists){
-                    console.log("Location doesnt exist");
+                    console.log("Location doesnt exist, creating new one...");
                     locationExists = true;
                     let data = {};
                     Object.assign(data,routeObj);
@@ -71,13 +92,15 @@ var app = (function() {
                     off(routesPath);
                     return;
                 }
-            });   
+            });
+            //TODO: Alert and then put all formData to previous state,blank or unselected  
         }
         document.getElementById("addDetails").addEventListener("click",()=>{
             console.log("hurray");
             valForm();
         });
         
+        const zoneExists = document.getElementById("zoneName");
         const numSens = document.getElementById("numSens");
         const numActs = document.getElementById("numActs");
         const sensorsFields = document.getElementById("sensorsFields");
@@ -89,15 +112,15 @@ var app = (function() {
 
             }
         }
-        function selectAlerts(selectId,divOptions){
+        function selectAlerts(selectClass,divOptions){
             // strVal();
-            selectId.addEventListener("change", () => {
+            selectClass.addEventListener("change", () => {
                 divOptions.innerHTML = "";
                 let alertArray = [];
-                if(selectId.value ==="selected"){
+                if(selectClass.value ==="selected"){
                     return;
                 }
-                else if(selectId.value === "range"){
+                else if(selectClass.value === "range"){
                     const newLabMinValue = document.createElement("label");
                     newLabMinValue.innerHTML = "Min Value" + ":";
     
@@ -105,8 +128,8 @@ var app = (function() {
                     newMinValue.id = "alertMinValueId";
                     alertArray.push(newMinValue.id);
                     newMinValue.type = "number";
-                    newMinValue.className ="numbVal";
-                    newMinValue.name = "sensorMinValue";
+                    newMinValue.className ="alertSenValMin";
+                    newMinValue.name = "alertMinValue";
     
                     const newLabMaxValue = document.createElement("label");
                     newLabMaxValue.innerHTML = "Max Value" + ":";
@@ -115,41 +138,41 @@ var app = (function() {
                     newMaxValue.id = "alertMaxValueId";
                     alertArray.push(newMaxValue.id);
                     newMaxValue.type = "number";
-                    newMaxValue.className ="numbVal";
-                    newMaxValue.name = "sensorMaxValue";
-
+                    newMaxValue.className ="alertSenValMax";
+                    newMaxValue.name = "alertMaxValue";
+    
                     divOptions.appendChild(newLabMinValue);
                     divOptions.appendChild(newMinValue);
                     divOptions.appendChild(newLabMaxValue);
                     divOptions.appendChild(newMaxValue);
                     return alertArray;
                 }
-                else if(selectId.value === "below") {
+                else if(selectClass.value === "below") {
                     const newLabAlertValue = document.createElement("label");
                     newLabAlertValue.innerHTML = "Alert Value" + ":";
     
                     const newAlertValue = document.createElement("input");
-                    newAlertValue.id = "alertValueBelowId";
-                    alertArray.push(newAlertValue.id);
-
+                    newAlertValue.setAttribute("class","alertValueBelowId");
+                    alertArray.push(newAlertValue.className);
+    
                     newAlertValue.type = "number";
-                    newAlertValue.className ="numbVal";
-                    newAlertValue.name = "sensorAlertValue";
+                    newAlertValue.className ="alertSenVal";
+                    newAlertValue.name = "alertValue";
                     divOptions.appendChild(newLabAlertValue);
                     divOptions.appendChild(newAlertValue);
                     return alertArray;
                 }
-                else if(selectId.value === "above"){
+                else if(selectClass.value === "above"){
                     const newLabAlertValue = document.createElement("label");
                     newLabAlertValue.innerHTML = "Alert Value" + ":";
     
                     const newAlertValue = document.createElement("input");
-                    newAlertValue.id = "alertValueAboveId";
-                    alertArray.push(newAlertValue.id);
-
+                    newAlertValue.setAttribute("class","alertValueAboveId");
+                    alertArray.push(newAlertValue.className);
+    
                     newAlertValue.type = "number";
-                    newAlertValue.className ="numbVal";
-                    newAlertValue.name = "sensorAlertValue";
+                    newAlertValue.className ="alertSenVal";
+                    newAlertValue.name = "alertValue";
                     divOptions.appendChild(newLabAlertValue);
                     divOptions.appendChild(newAlertValue);
                     return alertArray;
@@ -157,6 +180,7 @@ var app = (function() {
             });
         }
         
+        //TODO: Validate just numbers and letters
         //Validation Function /^[A-Za-z0-9]{0,20}$/
         // function strVal() {
         //     let strValClass = document.getElementsByClassName("strVal");
@@ -171,6 +195,11 @@ var app = (function() {
         //     }
         // }
         
+        //TODO: Zone exists()
+        zoneExists.addEventListener("change",()=>{
+            
+        });
+
         numSens.addEventListener("change",()=>{
             // strVal();
             sensorsFields.innerHTML = "";
@@ -187,6 +216,7 @@ var app = (function() {
                 // Create a new sensor with name and normal value
                 const newInputName = document.createElement("input");
                 newInputName.type = "text";
+                newInputName.className ="senNam";
                 newInputName.name = "sensorName" + (i + 1);
 
                 const newLabInputValue = document.createElement("label");
@@ -194,48 +224,48 @@ var app = (function() {
 
                 const newInputValue = document.createElement("input");
                 newInputValue.type = "number";
-                newInputValue.className ="numbVal";
+                newInputValue.className ="senVal";
                 newInputValue.name = "sensorNormalValue" + (i+1);
 
-                // Create measurement unit
-                const newMeas = document.createElement("label");
-                newMeas.innerHTML = "Measurement Unit" + ":";
+                // // Create measurement unit
+                // const newMeas = document.createElement("label");
+                // newMeas.innerHTML = "Measurement Unit" + ":";
 
-                const newMeasInput = document.createElement("input");
-                newMeasInput.type = "text";
-                newMeasInput.className ="numbVal";
-                newMeasInput.name = "sensorMeasUnit" + (i+1);
+                // const newMeasInput = document.createElement("input");
+                // newMeasInput.type = "text";
+                // newMeasInput.className ="senVal";
+                // newMeasInput.name = "sensorMeasUnit" + (i+1);
 
                 // Select with options to define alert or normal range of behaviour
                 const newSelectLabel = document.createElement("label");
                 newSelectLabel.innerHTML = "Select an option that fits best for one value or a range";
                 
                 const newSelect = document.createElement("select");
-                newSelect.id = "alertOption";
-                newSelect.name ="alertOption"
+                newSelect.setAttribute("class","alertOption");
+                //newSelect.name ="alertOption"
 
                 // Select creation
                 const newOptSel = document.createElement("option");
-                newOptSel.id = "optDefault";
+                newOptSel.setAttribute("class", "optDefault") ;
                 newOptSel.setAttribute("selected","selected");
                 newOptSel.setAttribute("value","selected");
                 newOptSel.appendChild(document.createTextNode("Pick an option"));
                 
                 const newOpt1 = document.createElement("option");
-                newOpt1.id = "belowValue";
+                newOpt1.setAttribute("class","belowValue");
                 
                 newOpt1.setAttribute("value","below");
                 
                 newOpt1.appendChild(document.createTextNode("Alert when below normal value"));
 
                 const newOpt2 = document.createElement("option");
-                newOpt2.id = "aboveValue";
+                newOpt2.setAttribute("class","aboveValue");
                 
                 newOpt2.setAttribute("value","above");
                 newOpt2.appendChild(document.createTextNode("Alert when above normal value above"));
 
                 const newOpt3 = document.createElement("option");
-                newOpt3.id = "rangeValue";
+                newOpt3.setAttribute("class","rangeValue");
                 
                 newOpt3.setAttribute("value","range");
                 newOpt3.appendChild(document.createTextNode("Create a range of normal behaviour values"));
@@ -246,23 +276,27 @@ var app = (function() {
                 newSelect.appendChild(newOpt3);
                 
                 const divOptions = document.createElement("div");
-                divOptions.id = "divOptions";
+                divOptions.setAttribute("class","divOptions");
                 // Append the label and input to the sensorsFields div
                 sensorsFields.appendChild(newLabelName);
                 sensorsFields.appendChild(newInputName);
                 sensorsFields.appendChild(newLabInputValue);
                 sensorsFields.appendChild(newInputValue);
-                sensorsFields.appendChild(newMeas);
-                sensorsFields.appendChild(newMeasInput);
+                // sensorsFields.appendChild(newMeas);
+                // sensorsFields.appendChild(newMeasInput);
                 sensorsFields.appendChild(newSelectLabel);
                 sensorsFields.appendChild(newSelect);
                 sensorsFields.appendChild(divOptions);
-
             }
             // call function to detect changes in the select
-            let selectId = document.getElementById("alertOption");
-            let divOptions = document.getElementById("divOptions");
-            selectAlerts(selectId,divOptions);
+            let selectClass = document.getElementsByClassName("alertOption");
+            let divOptions = document.getElementsByClassName("divOptions");
+            for (let i = 0; i < selectClass.length; i++) {
+                for(let j = 0; j < divOptions.length; j++){
+                    selectAlerts(selectClass[j],divOptions[j]);
+                } 
+            }
+            
          });
 
          // Actuators creation
