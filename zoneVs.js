@@ -195,6 +195,7 @@ var app = (function() {
             }
         });
    }
+
     function rulesZone(optPick){
         const pathName = 'ESP' + optPick;
         const path = ref(db,pathName);
@@ -331,6 +332,7 @@ var app = (function() {
         });
 
     }
+    
     function selectAlerts(selectClass,divOptions){
         // strVal();
         selectClass.addEventListener("change", () => {
