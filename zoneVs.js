@@ -61,6 +61,7 @@ var app = (function() {
     let rulesId = document.getElementById("rulesId");
     let editZoneId = document.getElementById("zoneElem");
     let selZoneEdit = document.getElementById("optElem");
+    
     function visualizeArea(optPick){
         const pathName = 'ESP' + optPick;
         const path = ref(db,pathName);
@@ -197,10 +198,10 @@ var app = (function() {
     function rulesZone(optPick){
         const pathName = 'ESP' + optPick;
         const path = ref(db,pathName);
-        rulesId.innerHTML = "";
+        //rulesId.innerHTML = "";
         onValue(path,(snapshot) => {
             if(snapshot.exists()){
-            // rulesId.innerHTML = "";
+            rulesId.innerHTML = "";
                 
                 const data = snapshot.val();
                 
@@ -654,12 +655,24 @@ var app = (function() {
             const sensorsPath = pathName + "/" + "sensors";
             const alertsPath = pathName + "/" + "alerts";
             const actuatorsPath = pathName + "/" + "actuators";
+            
             update(sensorsPath,sensorsData);
-            off(path)
-            update(alertsPath,sensorsData);
-            off(path)
-            update(actuatorsPath,sensorsData);
-            off(path);
+            off(sensorsPath)
+            update(alertsPath,alertsData);
+            off(alertsPath)
+            update(actuatorsPath,actuatorsData);
+            off(actuatorsPath);
+            //Make a loop to update every sensor and actuator into SPAFirebase
+            for(let i= 0; i < Object.keys(sensorsData).length;i++){
+                let pathSPASensors = "/spaFirebase" + Object.keys(sensorsData[i]);
+                update(pathSPASensors,"1");
+                off(pathSPASensors);
+            }
+            for(let i= 0; i < Object.keys(actuatorsData).length;i++){
+                let pathSPAActuators = "/spaFirebase" + Object.keys(actuatorsData[i]);
+                update(pathSPAActuators,"1");
+                off(pathSPAActuators);
+            }            
 
             //const alertVals = document.getElementsByClassName("alertVal");
         //     let newElems = {};
